@@ -1,0 +1,76 @@
+---
+layout: post
+title:  "粉饰太平"
+date:   2014-07-29 23:34:00
+categories: bootstrap
+snapshot: "使用Bootstrap美化你的Jekyll"
+---
+
+jekyll默认给的模板实在是不怎么好看。在官网看到的几个也一般般。估计应该有人做了很好看的模板只是我没有找到罢了。  
+准备自己简单搭一个，就当是练习了。开始吧~
+
+### Bootstrap
+记得很早的时候，能做一个网页就是很厉害的事情。那时候如果你的网页里有滚动字幕，有鼠标更随特效，更厉害一点再弄点背景音乐。就已经是相当厉害的了。那时候的人似乎时间也不是特别宝贵，一个网页开个几分钟也是可以等的。而今却已然不是这样了，如果你的网页3秒钟还打不开。大部分用户已经和你说拜拜了。
+
+言归正传，Bootstrap是某不存在的网站推出的前端framework。响应式布局可以随着屏幕分辨率不同而调整页面布局。新版本v3做的更加扁平化一些。
+
+### 目录结构
+简单看了一下目录结构，```_layouts/default.html```是总容器。其中引用了```_includes/head.html```作为```<head>```。在这里加入bootstrap需要的文件。刷新页面立刻就会感到不一样了。
+
+接着去```css/main.css```里把没用的样式剥掉。页面布局会飞掉，不着急。把Bootstrap的结构套进去就行了。套完之后页面已经差不多可以看了。
+
+### jQuery
+现在已经有了一个简洁又还算好看的页面了。之后要开始考虑如何进行美化。
+
+一般而言，大家都比较喜欢给自己的个人博客弄一张大图装一下格调。我也不例外，选了一张台湾的苍穹之顶的图。做了一下滚屏位移的效果。代码逻辑很简单：  
+对容器做```overflow: hidden```。监听滚屏事件，并计算出scroll量，对```<img>```的```margin-top```进行动态调整。  
+{% highlight js %}
+$(document).scroll(function() {
+	var _top = $(window).scrollTop();
+	var img = $(".navbar-header .nav-cntr img");
+	img.css("margin-top", -_top);
+}).scroll();
+{% endhighlight %}
+
+接下来，就是屏幕适配的问题了。为了使图片适应屏幕设置了```width: 100%```而设置容器固定高度为```400px```，这样会导致分辨率较低的情况下页面中只显示一小部分灯顶而把光柱部分给挡住。所以需要更新一下逻辑，根据当前屏幕分辨率动态调整图片的显示部分：  
+{% highlight js %}
+$(document).scroll(function() {
+	var _top = $(window).scrollTop();
+	var _width = $(window).width();
+	var _dt = (_width - 600) / 4;	// 根据屏幕分辨率计算出图片初始的偏移
+	_dt = _dt < 0 ? 0 : _dt;	// 如果偏移值小于0，就设为0
+	_top = -_dt - _top;
+
+	var img = $(".navbar-header .nav-cntr img");
+
+	img.css("margin-top", _top);
+}).scroll();
+{% endhighlight %}
+
+然后考虑另一个问题，如果说屏幕分辨率很低导致图片缩的很小。可能会出现屏幕没有滚多少，图片就滚出容器的情况：
+{% highlight js %}
+$(document).scroll(function() {
+	var _top = $(window).scrollTop();
+	var _width = $(window).width();
+	var _dt = (_width - 600) / 4;
+	_dt = _dt < 0 ? 0 : _dt;
+	_top = -_dt - _top;
+
+	var img = $(".navbar-header .nav-cntr img");
+
+	var _mh = img.height();
+	var _nh = $(".navbar-header .nav-cntr").height();
+	var _t = _mh - _nh;
+
+	if(_t < -_top) _top = -_t;
+
+	img.css("margin-top", _top);
+}).scroll();
+{% endhighlight %}
+
+好了，最后收个尾。为图片设置一个最小宽度避免太小的图片使得左上角的超链接变得不明显。再添加```resize```事件使得窗口大小改变时也改变大图的尺寸/位置：
+{% highlight js %}
+$(window).resize(function() {
+	$(document).scroll();
+});
+{% endhighlight %}

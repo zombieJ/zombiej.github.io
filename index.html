@@ -1,0 +1,30 @@
+---
+layout: default
+---
+
+<div class="home">
+	<h1>
+		{{ site.title }}
+		<small><a href="{{ "/feed.xml" | prepend: site.baseurl }}">via RSS</a/small>
+	</h1>
+	<p>{{ site.description }}</p>
+
+	<hr />
+
+	<ul class="posts">
+		{% for post in site.posts %}
+			<li>
+				<h3><a class="post-link" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a></h3>
+				<p>{{post.snapshot}}</p>
+				<p class="des">
+					{{ post.date | date: "%b %-d, %Y" }} | Tags:
+					{% for category in post.categories %}
+						<a class="tag-link">{{category}}</a>
+					{% endfor %}
+				</p>
+				<hr />
+			</li>
+		{% endfor %}
+	</ul>
+
+</div>

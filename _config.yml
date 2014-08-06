@@ -1,0 +1,13 @@
+# Site settings
+title: 竹光小居
+email: smith3@sina.com
+description: "平常总会遇到这么一种情况，发现/解决/想到了一些有意思的事情却发现没有地方记。于是就随便搭了一个小屋，把事情就暂且放这里罢。嗯，终于下定决心开始记录下生活了么？"
+baseurl: ""
+url: "http://aizhuzi.com"
+twitter_username: 
+github_username:  zombieJ
+
+# Build settings
+markdown: kramdown
+permalink: pretty
+#highlighter: false
