@@ -1,0 +1,40 @@
+<div class="box box-primary">
+	<div class="box-header with-border">
+		<h3 class="box-title">Blog</h3>
+
+		<a class="pull-right" data-toggle="collapse" href="[id='tags']">
+			<span class="fa fa-tags"></span>Tags
+		</a>
+	</div>
+	<div class="box-body">
+		<div id="tags" class="box-body-block collapse">
+			<ul class="list-inline">
+				<li ng-repeat="(_tag, articles) in Blog.list().tags">
+					<a class="label" ng-class="{'label-default': _tag !== tag, 'label-primary': _tag === tag}" ng-click="setTag(_tag)">{{_tag}}</a>
+				</li>
+			</ul>
+		</div>
+		<ul class="products-list product-list-in-box">
+			<li class="item" ng-repeat="blog in articles() track by $index">
+				<div class="product-img">
+					<img ng-src="{{blog.thumbnail}}" ng-if="blog.thumbnail">
+					<span class="fa fa-book" ng-if="!blog.thumbnail"></span>
+				</div>
+				<div class="product-info">
+					<a class="label label-warning pull-right" ng-repeat="tag in blog.tags track by $index" ng-click="setTag(tag, true)">{{tag}}</a>
+					<a class="product-title" href="#/blog/{{blog.createTime}}">{{blog.title}}</a>
+					<span class="product-description">{{blog.introduction}}</span>
+				</div>
+			</li>
+
+			<li ng-if="!Blog.list().articles || Blog.list().articles.length === 0">
+				<span class="text text-muted">No Blog Yet...</span>
+			</li>
+		</ul>
+	</div>
+	<div class="box-footer">
+		<a href="#/create" class="btn btn-primary" ng-if="Page.local">
+			<span class="fa fa-plus"></span> New Blog
+		</a>
+	</div>
+</div>

@@ -1,0 +1,21 @@
+<div class="box box-primary">
+	<div class="box-body">
+		<div class="fixed-toolbar" ng-if="Page.local">
+			<a class="btn btn-primary btn-xs" href="#/edit/{{blog.createTime}}">
+				<span class="fa fa-pencil"></span> Edit
+			</a>
+			<a class="btn btn-danger btn-xs" ng-click="delete()">
+				<span class="fa fa-trash"></span> Delete
+			</a>
+		</div>
+
+		<div id="article">
+			<h3>{{blog.title}}</h3>
+			<div class="about">
+				<span class="pull-right">{{date}}</span>
+				<span ng-show="blog.tags.length">Tags: {{blog.tags.join(",")}}</span>
+			</div>
+			<div class="article-cntr"></div>
+		</div>
+	</div>
+</div>

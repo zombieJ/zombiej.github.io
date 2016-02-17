@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="app" ng-controller="main">
+<head>
+	<meta charset="UTF-8">
+	<title>{{Config.get().title || 'My Blog'}}</title>
+
+	<link rel="stylesheet" href="public/css/styles.min.css">
+</head>
+<body class="hold-transition skin-purple sidebar-mini">
+<div class="wrapper">
+	<header class="main-header">
+		<!-- Logo -->
+		<a href="#/home" class="logo">
+			<!-- mini logo for sidebar mini 50x50 pixels -->
+			<span class="logo-mini"><i class="fa fa-book"></i></span>
+			<!-- logo for regular state and mobile devices -->
+			<span class="logo-lg">{{Config.get().title || 'My Blog'}}</span>
+		</a>
+
+		<!-- Header Navbar: style can be found in header.less -->
+		<nav class="navbar navbar-static-top" role="navigation">
+			<!-- Sidebar toggle button-->
+			<a class="sidebar-toggle" data-toggle="offcanvas" role="button">
+				<span class="sr-only">Toggle navigation</span>
+			</a>
+
+			<div class="navbar-custom-menu">
+				<ul class="nav navbar-nav">
+					<li ng-show="Page.local && !Page.menu.length">
+						<a ng-click="rebuild()"><span class="fa fa-refresh"></span> Rebuild</a>
+					</li>
+					<li ng-if="Page.local" ng-repeat="item in Page.menu" ng-class="{disabled: item.disabled()}">
+						<a class="item" ng-click="(!item.disabled || !item.disabled()) && item.func($event)">{{item.name}}</a>
+					</li>
+				</ul>
+			</div>
+		</nav>
+	</header>
+	<!-- Left side column. contains the logo and sidebar -->
+	<aside class="main-sidebar">
+		<!-- sidebar: style can be found in sidebar.less -->
+		<section class="sidebar">
+			<!-- sidebar menu: : style can be found in sidebar.less -->
+			<ul class="sidebar-menu">
+				<li class="header">MAIN NAVIGATION</li>
+				<li><a href="#/home"><i class="fa fa-home"></i> <span>Home</span></a></li>
+			</ul>
+			<ul class="sidebar-menu" ng-if="Page.local">
+				<li class="header">CONFIGURATION</li>
+				<li><a href="#/config/common"><i class="fa fa-coffee"></i> <span>Common</span></a></li>
+			</ul>
+		</section>
+		<!-- /.sidebar -->
+	</aside>
+
+	<!-- Content Wrapper. Contains page content -->
+	<div class="content-wrapper">
+		<!-- Content Header (Page header) -->
+		<section class="content-header" ng-hide="Page.hideTitle">
+			<h1>
+				{{Page.title}}
+				<small>{{Page.subTitle}}</small>
+			</h1>
+		</section>
+
+		<!-- Main content -->
+		<section class="content">
+			<div class="row">
+				<div class="col-md-12">
+					<ng-view></ng-view>
+				</div>
+			</div>
+		</section>
+		<!-- /.content -->
+	</div>
+</div>
+<!-- ./wrapper -->
+
+<script src="public/js/doc.js"></script>
+</body>
+</html>
