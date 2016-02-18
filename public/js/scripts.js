@@ -754,7 +754,7 @@
 
 		// ======================== UI ========================
 		// Asset drop
-		$("#article").on("drop", function(event) {
+		$("#editArticle").on("drop", function(event) {
 			var files = event.originalEvent.dataTransfer.files;
 			if(files.length) {
 				event.preventDefault();
@@ -784,7 +784,7 @@
 		$scope.resize = function(delay) {
 			$("body").addClass("lockSidebar");
 			setTimeout(function() {
-				var $article = $("#article");
+				var $article = $("#editArticle");
 				var $overview = $("#overview .article-cntr");
 				var $resView = $("#resView");
 				$article.css("min-height", $win.height() - $article.offset().top - 15);
