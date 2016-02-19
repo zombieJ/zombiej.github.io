@@ -28,7 +28,8 @@
 			</li>
 
 			<li ng-if="!Blog.list().articles || Blog.list().articles.length === 0">
-				<span class="text text-muted">No Blog Yet...</span>
+				<span class="text text-muted" ng-hide="Blog.ready"><span class="fa fa-circle-o-notch fa-spin"></span> Loading...</span>
+				<span class="text text-muted" ng-show="Blog.ready">No Blog Yet...</span>
 			</li>
 		</ul>
 	</div>

@@ -13,6 +13,13 @@
 			<label for="dateFormat">Date Format</label>
 			<input type="text" class="form-control" id="dateFormat" placeholder="Default: YYYY-MM-DD HH:mm" ng-model="config.dateFormat">
 		</div>
+
+		<div class="checkbox">
+			<label>
+				<input type="checkbox" ng-checked="config.navFixTop" ng-click="config.navFixTop = !config.navFixTop;">
+				Navigation Bar Fix Top
+			</label>
+		</div>
 	</div>
 	<!-- /.box-body -->
 	<div class="box-footer">
