@@ -570,7 +570,7 @@
 								exec("git push", function (error, stdout, stderr) {
 									$.dialog({
 										title: "Git Push Done",
-										content: $("<pre>").text((stdout || stderr).trim())
+										content: $("<pre>").text((stdout + "\n" + stderr).trim())
 									});
 								});
 							});
