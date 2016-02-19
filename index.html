@@ -26,11 +26,11 @@
 
 			<div class="navbar-custom-menu">
 				<ul class="nav navbar-nav">
-					<li ng-show="Page.local && !Page.menu.length">
-						<a class="item" ng-click="Git.push()"><span class="fa fa-cloud-upload"></span> Upload</a>
+					<li ng-show="Page.local" ng-class="{disabled: lock}">
+						<a class="item" ng-click="!lock && upload()"><span class="fa fa-cloud-upload"></span> Upload</a>
 					</li>
-					<li ng-show="Page.local && !Page.menu.length">
-						<a class="item" ng-click="rebuild()"><span class="fa fa-refresh"></span> Rebuild</a>
+					<li ng-show="Page.local && !Page.menu.length" ng-class="{disabled: lock}">
+						<a class="item" ng-click="!lock && rebuild()"><span class="fa fa-refresh"></span> Rebuild</a>
 					</li>
 					<li ng-if="Page.local" ng-repeat="item in Page.menu" ng-class="{disabled: item.disabled()}">
 						<a class="item" ng-click="(!item.disabled || !item.disabled()) && item.func($event)">{{item.name}}</a>
