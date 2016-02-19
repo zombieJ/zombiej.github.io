@@ -568,14 +568,10 @@
 							exec("git commit -m 'update blog'", function (error, stdout, stderr) {
 								if(stderr) dialogErr("Git Commit Error", stderr);
 								exec("git push", function (error, stdout, stderr) {
-									if(stderr) {
-										dialogErr("Git Push Error", stderr);
-									} else {
-										$.dialog({
-											title: "Git Push Success",
-											content: $("<pre>").text(stdout.trim()),
-										});
-									}
+									$.dialog({
+										title: "Git Push Done",
+										content: $("<pre>").text((stdout || stderr).trim())
+									});
 								});
 							});
 						});
