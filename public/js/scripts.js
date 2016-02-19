@@ -128,11 +128,12 @@
 		});
 	});
 
-	app.controller('main', function ($scope, Page, Blog, Config, Asset) {
+	app.controller('main', function ($scope, Page, Blog, Config, Asset, Git) {
 		window.Config = $scope.Config = Config;
 		window.Page = $scope.Page = Page;
 		window.Blog = $scope.Blog = Blog;
 		window.Asset = $scope.Asset = Asset;
+		window.Git = $scope.Git = Git;
 
 		$scope.$on('$routeChangeStart', function(event, next, current) {
 			Page.reset();
@@ -531,6 +532,59 @@
 		};
 
 		return File;
+	});
+})();
+(function() {
+	
+
+	angular.module('app').factory("Git", function () {
+		var Git = function() {};
+
+		function dialogErr(title, content) {
+			$.dialog({
+				title: title,
+				content: content
+			});
+		}
+
+		Git.push = function() {
+			var exec = require('child_process').exec;
+
+			// Git: status
+			exec("git status", function (error, stdout, stderr) {
+				if(stderr) {
+					dialogErr("Git Status Error", stderr);
+				} else {
+					$.dialog({
+						title: "Git Status Confirm",
+						content: $("<pre>").text(stdout.trim()),
+						confirm: true
+					}, function(ret) {
+						if(!ret) return;
+
+						// Git: add .
+						exec("git add .", function (error, stdout, stderr) {
+							if(stderr) dialogErr("Git Add Error", stderr);
+							exec("git commit -m 'update blog'", function (error, stdout, stderr) {
+								if(stderr) dialogErr("Git Commit Error", stderr);
+								exec("git push", function (error, stdout, stderr) {
+									if(stderr) {
+										dialogErr("Git Push Error", stderr);
+									} else {
+										$.dialog({
+											title: "Git Push Success",
+											content: $("<pre>").text(stdout.trim()),
+										});
+									}
+								});
+							});
+						});
+					});
+				}
+			});
+		};
+
+		return Git;
 	});
 })();
 (function() {

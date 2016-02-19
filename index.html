@@ -27,7 +27,10 @@
 			<div class="navbar-custom-menu">
 				<ul class="nav navbar-nav">
 					<li ng-show="Page.local && !Page.menu.length">
-						<a ng-click="rebuild()"><span class="fa fa-refresh"></span> Rebuild</a>
+						<a class="item" ng-click="Git.push()"><span class="fa fa-cloud-upload"></span> Upload</a>
+					</li>
+					<li ng-show="Page.local && !Page.menu.length">
+						<a class="item" ng-click="rebuild()"><span class="fa fa-refresh"></span> Rebuild</a>
 					</li>
 					<li ng-if="Page.local" ng-repeat="item in Page.menu" ng-class="{disabled: item.disabled()}">
 						<a class="item" ng-click="(!item.disabled || !item.disabled()) && item.func($event)">{{item.name}}</a>
