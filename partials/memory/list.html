@@ -1,0 +1,69 @@
+<div class="box box-primary">
+	<div class="box-header with-border">
+		<h3 class="box-title">
+			My Memories
+			<small><a class="text-muted" ng-if="Page.local" ng-click="newMemory()">+New Memory</a></small>
+		</h3>
+	</div>
+	<div class="box-body">
+		<ul class="memories list-inline">
+			<li ng-repeat="mem in memoryHolder.memories track by $index"
+				ng-mouseenter="enterMemory(mem, $event)"
+				ng-mouseleave="leaveMemory(mem)"
+				ng-click="deleteMemory(mem)">
+				<div>
+					<img ng-src="{{mem.thumbnail}}" ng-if="mem.thumbnail">
+					<span class="fa fa-question-circle" ng-if="!mem.thumbnail"></span>
+				</div>
+			</li>
+		</ul>
+	</div>
+</div>
+
+<div id="memTip" class="memory clearfix">
+	<div class="mem-img">
+		<img ng-src="{{currentMemory.thumbnail}}" ng-if="currentMemory.thumbnail">
+		<span class="fa fa-question-circle" ng-if="!currentMemory.thumbnail"></span>
+	</div>
+	<div class="mem-info">
+		<h3>{{currentMemory.title}}</h3>
+		<pre>{{currentMemory.description}}</pre>
+	</div>
+</div>
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="memoryMDL" tabindex="-1">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h4 class="modal-title" id="myModalLabel">New Memory</h4>
+			</div>
+			<div class="modal-body">
+				<div class="form-group">
+					<label>Title</label>
+					<input type="text" class="form-control" ng-model="new.title">
+				</div>
+				<div class="form-group">
+					<label>Description</label>
+					<textarea rows="5" class="form-control" ng-model="new.description"></textarea>
+				</div>
+				<div class="form-group">
+					<label>Image</label>
+					<div class="memoryWindow" ng-hide="new.thumbnail">
+						Drag Image Here
+					</div>
+					<img ng-if="new.thumbnail" ng-src="{{new.thumbnail}}" />
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				<button type="button" class="btn btn-primary" ng-click="saveMemory()">Save changes</button>
+			</div>
+		</div>
+	</div>
+</div>
