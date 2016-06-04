@@ -18,7 +18,7 @@
 			</ul>
 		</div>
 		<ul class="products-list product-list-in-box">
-			<li class="item" ng-repeat="blog in articles() track by $index">
+			<li class="item" ng-repeat="blog in pageArticles() track by $index">
 				<div class="product-img">
 					<img ng-src="{{blog.thumbnail}}" ng-if="blog.thumbnail">
 					<span class="fa fa-book" ng-if="!blog.thumbnail"></span>
@@ -37,6 +37,9 @@
 		</ul>
 	</div>
 	<div class="box-footer">
+		<uib-pagination class="pagination-sm inline no-margin pull-right" ng-model="currentPage"
+						previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"
+						total-items="articles().length" items-per-page="pageSize" max-size="5" boundary-links="true"></uib-pagination>
 		<a href="#/create" class="btn btn-primary" ng-if="Page.local">
 			<span class="fa fa-plus"></span> New Blog
 		</a>

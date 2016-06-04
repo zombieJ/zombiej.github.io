@@ -728,6 +728,9 @@
 	blogCtrl.controller('listCtrl', function ($scope, Page, Blog) {
 		Page.title = "Home";
 
+		$scope.pageSize = 10;
+		$scope.currentPage = 1;
+
 		$scope.tag = "";
 		$scope.setTag = function(tag, force) {
 			if(force) {
@@ -741,9 +744,15 @@
 
 		$scope.articles = function() {
 			var _list = Blog.list();
-			if(!$scope.tag) return _list.articles;
+			if(!$scope.tag) {
+				return _list.articles ? _list.articles : [];
+			} else {
+				return (_list.tags ? _list.tags[$scope.tag] : []) || [];
+			}
+		};
 
-			return _list.tags[$scope.tag];
+		$scope.pageArticles = function() {
+			return $scope.articles().slice(($scope.currentPage - 1) * $scope.pageSize, $scope.currentPage * $scope.pageSize);
 		};
 	});
 
