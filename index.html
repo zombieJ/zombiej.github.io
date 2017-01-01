@@ -2,7 +2,7 @@
 <html lang="en" ng-app="app" ng-controller="main">
 <head>
 	<meta charset="UTF-8">
-	<title>{{Config.get().title}}</title>
+	<title>{{getDocTitle()}}</title>
 
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, target-densitydpi=device-dpi" />
 
@@ -49,7 +49,7 @@
 			<ul class="sidebar-menu">
 				<li class="header">MAIN NAVIGATION</li>
 				<li><a href="#/home"><i class="fa fa-home"></i> <span>Home</span></a></li>
-				<li><a href="#/memory"><i class="fa fa-home"></i> <span>Memory</span></a></li>
+				<li><a href="#/memory"><i class="fa fa-camera"></i> <span>Memory</span></a></li>
 			</ul>
 			<ul class="sidebar-menu" ng-if="Page.local">
 				<li class="header">CONFIGURATION</li>
