@@ -593,7 +593,7 @@
 						// Git: add .
 						exec("git add .", function (error, stdout, stderr) {
 							if(stderr) {dialogErr("Git Add Error", stderr);_deferred.reject();}
-							exec("git commit -m 'update blog'", function (error, stdout, stderr) {
+							exec('git commit -m "update blog"', function (error, stdout, stderr) {
 								if(stderr) {dialogErr("Git Commit Error", stderr);_deferred.reject();}
 								exec("git push", function (error, stdout, stderr) {
 									$.dialog({
