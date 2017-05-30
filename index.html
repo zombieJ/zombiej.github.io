@@ -10,7 +10,8 @@
 		<script src="index.js"></script>
 	</head>
 	<body>
-		<div id="app">
+		<h1 id="loadingTips"></h1>
+		<div id="app" style="display: none;">
 			<div id="start" :class="{ close: startClose }" :style="{ height: startHeight + '%' }">
 				<img src="res/start.jpg" id="startImage" :style="{ width: startImgWidth * 0.8 + '%', opacity: startImgWidth / 100 }" />
 				<form id="startForm" :style="{ opacity: startImgWidth / 100 }" @submit.prevent="submit">
@@ -44,5 +45,19 @@
 				<a id="reQuery" @click="restart">重新查询</a>
 			</div>
 		</div>
+
+		<script>
+			var loadingCnt = 0;
+			var $loading = document.getElementById('loadingTips');
+			var loadingId = setInterval(function () {
+				loadingCnt += 1;
+				if (loadingCnt > 3) loadingCnt = 0;
+
+				$loading.innerText = '';
+				for (var i = 0; i < loadingCnt; i += 1) {
+					$loading.innerText += '.';
+				}
+			}, 200);
+		</script>
 	</body>
 </html>

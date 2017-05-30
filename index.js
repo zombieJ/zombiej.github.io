@@ -17,6 +17,11 @@ function findIndex(str) {
 }
 
 window.onload = function () {
+	clearInterval(loadingId);
+	var $loadingTip = document.getElementById('loadingTips');
+	$loadingTip.parentNode.removeChild($loadingTip);
+	document.getElementById('app').style.display = 'block';
+
 	var app = new Vue({
 		el: '#app',
 		data: {
