@@ -1,0 +1,166 @@
+html, body, h1, h3, p, span, a {
+	margin: 0;
+	padding: 0;
+	line-height: 100%;
+	text-decoration: none;
+}
+
+html, body {
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+}
+
+#app {
+	text-align: center;
+	height: 100%;
+	width: 100%;
+	overflow: hidden;
+}
+
+#start, #seatView {
+	max-width: 780px;
+	margin: 0 auto;
+}
+
+#start {
+	width: 100%;
+	height: 100%;
+	overflow-y: auto;
+}
+#start.close {
+	overflow: hidden;
+}
+
+#startImage {
+	margin-top: 10%;
+}
+
+#startForm {
+	color: #A2722A;
+}
+
+#startForm h1 {
+	font-size: 1.5em;
+	margin: 15px 0 10px 0;
+}
+
+#startForm input[type="text"] {
+	color: #A2722A;
+	font-size: 1.2em;
+	text-align: center;
+	border: 1px solid #A2722A;
+	padding: 5px;
+	display: block;
+	margin: 0 auto 10px auto;
+	width: 500px;
+	outline: none;
+	max-width: 80%;
+}
+
+#seatView {
+	height: 100%;
+	overflow-y: auto;
+	background: #414141;
+	color: #D9C689;
+	position: relative;
+}
+
+#seatView #infoContainer {
+	border: 1px solid #D9C689;
+	padding-bottom: 1em;
+	margin: 1.3em 1.3em 0 1.3em;
+}
+
+#welcomeTip {
+	position: absolute;
+	top: 1.2em;
+	left: 0;
+	right: 0;
+	text-align: center;
+	font-size: 0.8em!important;
+}
+#welcomeTip span {
+	background: #414141;
+	display: inline-block;
+	padding: 0 0.8em;
+}
+
+#seatView h3 {
+	margin: 1em 0 0.6em 0;
+	font-size: 1.2em;
+}
+#seatView p {
+	font-size: 1em;
+}
+
+#seatView #seatContainer {
+	border: 1px solid #D9C689;
+	border-top: 0;
+	margin: 0 1.3em 1.3em 1.3em;
+	padding-bottom: 1em;
+}
+
+#seatView #seatContainer h3 {
+	margin: 0 0 0.3em 0;
+	padding: 0.4em 0;
+}
+
+#seatView #seatContainer .seatLine {
+	display: inline-block;
+	margin: 0 1em;
+}
+
+#seatView #seatContainer .seatLine .group {
+	margin-bottom: 5px;
+}
+
+#seatView #seatContainer .seatLine .group .seat,
+#seatView #seatContainer .seatLine .group .table {
+	display: inline-block;
+	border: 1px solid #D9C689;
+	vertical-align: top;
+}
+#seatView #seatContainer .seatLine .group .table {
+	height: 1.6em;
+	line-height: 1.6em;
+	width: 2em;
+}
+
+#seatView #seatContainer .seatLine .group .seat {
+	height: 1em;
+	width: 1em;
+	margin-top: 0.3em;
+}
+
+#seatView #seatContainer .seatLine .group .seat.check {
+	background: #D9C689;
+}
+
+#reQuery {
+	display: inline-block;
+	color: #D9C689;
+	margin-bottom: 1em;
+}
+#reQuery:active {
+	color: #BD9D3E;
+}
+
+.btn {
+	border: 0;
+	background: #A2722A;
+	color: #FFF;
+	font-size: 1.2em;
+	padding: 5px 20px;
+	border-radius: 3px;
+	outline: none;
+}
+
+.btn:active {
+	background: #8D6425;
+}
+
+.error {
+	color: #A82F2F;
+	margin-top: 0.6em;
+}

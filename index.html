@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<title>G & J Wedding</title>
+		<link rel="stylesheet" href="index.css" />
+		<script src="https://cdn.bootcss.com/vue/2.3.3/vue.min.js"></script>
+		<script src="seatList.js"></script>
+		<script src="index.js"></script>
+	</head>
+	<body>
+		<div id="app">
+			<div id="start" :class="{ close: startClose }" :style="{ height: startHeight + '%' }">
+				<img src="res/start.jpg" id="startImage" :style="{ width: startImgWidth * 0.8 + '%', opacity: startImgWidth / 100 }" />
+				<form id="startForm" :style="{ opacity: startImgWidth / 100 }" @submit.prevent="submit">
+					<h1>座位查询</h1>
+					<input type="text" v-model="username" placeholder="请输入姓名..." id="username" autocomplete="off" />
+					<input type="submit" class="btn" value="查询" id="userSubmit" />
+				</form>
+				<p v-if="usernameErr" class="error">查询失败，请检查一下输入哦~</p>
+			</div>
+			<div id="seatView" v-if="startClose">
+				<div id="infoContainer">
+					<!--p id="welcomeTip">
+						<span :style="{ opacity: seatValue / 100 }">欢迎参加婚礼</span>
+					</p-->
+					<h3>婚礼时间</h3>
+					<p>6月17日 下午6点</p>
+					<h3>婚礼地点</h3>
+					<p>外滩2号 华尔道夫酒店 2楼 菁会厅</p>
+				</div>
+				<div id="seatContainer">
+					<h3>座位位置</h3>
+					<div v-for="n in seatLineCount" class="seatLine">
+						<div v-for="(seat, index) in getSeatLineList(n)" class="group">
+							<div class="seat" :class="{ check: userIndex === seat.left.id }"></div>
+							<div class="table">{{index + 1}}</div>
+							<div class="seat" :class="{ check: userIndex === seat.right.id }"></div>
+						</div>
+					</div>
+				</div>
+
+				<a id="reQuery" @click="restart">重新查询</a>
+			</div>
+		</div>
+	</body>
+</html>
