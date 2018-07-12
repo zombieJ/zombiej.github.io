@@ -10,11 +10,16 @@
   "dependencies": {
     "antd": "^3.6.6",
     "dva": "^2.3.1",
+    "lodash.throttle": "^4.1.1",
+    "moment": "^2.22.2",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
+    "showdown": "^1.8.6",
     "umi-plugin-dva": "^0.9.1",
     "umi-plugin-routes": "^0.1.5"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "fs-extra": "^6.0.1"
+  },
   "scripts": {}
 }

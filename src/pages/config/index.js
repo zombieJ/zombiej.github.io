@@ -13,8 +13,9 @@ class Config extends React.Component {
         this.props.dispatch({
           type: 'global/updateConfig',
           ...values,
+        }).then(() => {
+          message.success('Update success!');
         });
-        message.success('Update success!');
       }
     });
   };

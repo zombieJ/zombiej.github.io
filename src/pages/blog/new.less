@@ -1,0 +1,66 @@
+.full {
+  display: block;
+  height: ~"calc(100vh - 48px)";
+}
+
+.preview {
+  background: #fff;
+  height: 100%;
+  overflow-y: auto;
+  padding: 10px 16px;
+}
+
+.editor {
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  .form-item {
+    flex: none;
+
+    &.flex {
+      flex: auto;
+      position: relative;
+      margin: 0;
+
+      :global {
+        .ant-form-item-control-wrapper {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+
+          .ant-form-item-control {
+            height: 100%;
+
+            .ant-form-item-children {
+              position: static;
+
+              textarea {
+                position: absolute;
+                width: 100%;
+                top: 0;
+                bottom: 20px;
+              }
+            }
+          }
+
+          .ant-form-explain {
+            display: none;
+          }
+        }
+      }
+    }
+  }
+
+  // .title {
+  //   flex: none;
+  //   margin-bottom: 16px;
+  // }
+
+  // .content {
+  //   flex: auto;
+  //   flex-grow: 1;
+  //   margin-bottom: 16px;
+  // }
+}
