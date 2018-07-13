@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import { connect } from 'dva';
 import { Row, Col, Input, Button, message, Form } from 'antd';
 import router from 'umi/router';
@@ -12,7 +13,7 @@ const converter = new showdown.Converter();
 
 class Looper extends React.Component {
   state = {
-    count: 5,
+    count: 3,
   };
 
   componentDidMount() {
@@ -32,8 +33,17 @@ class Looper extends React.Component {
     clearInterval(this.id);
   }
 
+  onCancel = () => {
+    clearInterval(this.id);
+  };
+
   render() {
-    return this.state.count;
+    return (
+      <span>
+        Save success! Will redrect in {this.state.count} seconds...
+        [<a onClick={this.onCancel}>CANCEL</a>]
+      </span>
+    );
   }
 }
 
@@ -66,10 +76,20 @@ class New extends React.Component {
   onFileDrop = (event) => {
     event.preventDefault();
 
+    const { form: { getFieldValue, setFieldsValue } } = this.props;
+
     const { files } = event.dataTransfer;
     this.props.dispatch({
       type: 'assets/upload',
       files,
+    }).then(({ fileName }) => {
+      const oriContent = getFieldValue('content') || '';
+      const content = `${oriContent}![](data/assets/${fileName})\n\n`;
+      setFieldsValue({
+        content,
+      });
+
+      this.throttleRefreshArtitle(content);
     });
   };
   
@@ -78,9 +98,22 @@ class New extends React.Component {
   };
 
   onKeyDown = (event) => {
-    if (event.which === 13 && (event.ctrlKey || event.metaKey)) {
+    if (event.which === 27) {
+      if (this.$looper) {
+        this.$looper.onCancel();
+      }
+      message.destroy();
+    } else if (event.which === 13 && (event.ctrlKey || event.metaKey)) {
       this.save(event);
     }
+  };
+
+  setLooperRef = (looper) => {
+    this.$looper = looper;
+  };
+
+  setSumbitRef = (submit) => {
+    this.$submit = ReactDOM.findDOMNode(submit);
   };
 
   inputRef = (ele) => {
@@ -96,6 +129,8 @@ class New extends React.Component {
   save = (e) => {
     e.preventDefault();
 
+    if (this.state.lock) return;
+
     const { form } = this.props;
 
     form.validateFieldsAndScroll((err, values) => {
@@ -105,6 +140,7 @@ class New extends React.Component {
         const tags = tagTrim ? tagTrim.split(/,|;|，|；/) : [];
 
         this.setState({ lock: true });
+        this.$submit.focus();
 
         this.props.dispatch({
           type: 'article/saveArticle',
@@ -115,9 +151,9 @@ class New extends React.Component {
           this.setState({ lock: false });
           message.success(
             <span>
-              Save success! Will redrect in <Looper /> seconds...
+              <Looper ref={this.setLooperRef} />
             </span>,
-            6,
+            4,
           );
         }).catch(() => {
           this.setState({ lock: false });
@@ -176,7 +212,7 @@ class New extends React.Component {
                 
                 
                 <div>
-                  <Button disabled={lock} type="primary" htmlType="submit">保存文章</Button>
+                  <Button ref={this.setSumbitRef} type="primary" htmlType="submit">保存文章</Button>
                 </div>
               </div>
             </Form>
