@@ -18,6 +18,5 @@ export default {
       .catch(() => {
         res.json({ success: false });
       });
-    
   }
 };

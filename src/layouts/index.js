@@ -3,6 +3,8 @@ import { Layout, Menu, Icon } from 'antd';
 import Link from 'umi/link';
 import { connect } from 'dva';
 
+import './index.less';
+
 const { Content, Sider } = Layout;
 
 class Main extends React.Component {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'dva';
-import { Tag, Card, Spin } from 'antd';
+import { Tag, Card, Spin, Icon } from 'antd';
 import showdown from 'showdown';
 import moment from 'moment';
 
@@ -54,7 +54,7 @@ class Article extends React.Component {
 
   render() {
     const { article, html } = this.state;
-    const { dateFormat } = this.props;
+    const { dateFormat, isDev } = this.props;
     console.log('>>>', article);
 
     if (!article) {
@@ -63,9 +63,18 @@ class Article extends React.Component {
 
     const { title, tags = [], createTime } = article;
 
+    let $extra;
+    if (isDev) {
+      $extra = (
+        <a>
+          <Icon type="edit" /> 编辑
+        </a>
+      );
+    }
+
     return (
       <div>
-        <Card title={title}>
+        <Card title={title} extra={$extra}>
           <div className={styles.prefix}>
             <span className={styles.date}>
               {moment(createTime).format(dateFormat)}
@@ -84,7 +93,8 @@ class Article extends React.Component {
   }
 }
 
-const mapState = ({ global: { dateFormat }, article: { articles } }) => ({
+const mapState = ({ global: { dateFormat, isDev }, article: { articles } }) => ({
+  isDev,
   dateFormat,
   articles,
 });
