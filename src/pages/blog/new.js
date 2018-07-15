@@ -158,7 +158,7 @@ class New extends React.Component {
           title,
           tags,
           content,
-          createTime: article.createTime,
+          createTime: article ? article.createTime : null,
         }).then(() => {
           this.setState({ lock: false });
           message.success(
