@@ -1,5 +1,6 @@
 import fse from 'fs-extra';
 import { refreshList } from './util';
+import Path from 'path';
 
 function saveArticle(createTime, reqBody) {
   const { content, title, tags } = reqBody;
@@ -34,9 +35,9 @@ export default {
     });
   },
 
-  'get /data/articles/:id': function(req, res) {
+  'get /data/articles/:file': function(req, res) {
     setTimeout(() => {
-      res.sendfile(`./data/articles/${req.params.id}.json`);
+      res.sendfile(Path.resolve(`./data/articles/${req.params.file}`));
     }, 1000);
   },
 

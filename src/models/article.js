@@ -16,7 +16,7 @@ const model = {
     },
 
     *loadArticle({ id }, { call, put }) {
-      const article = yield call(request, `/data/articles/${id}`);
+      const article = yield call(request, `/data/articles/${id}.json`);
 
       yield put({
         type: 'updateArticle',
