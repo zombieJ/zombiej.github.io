@@ -51,7 +51,6 @@ const model = {
       };
     },
     triggerCollapse(state, { collapsed }) {
-      console.log('....', collapsed);
       return {
         ...state,
         collapsed,

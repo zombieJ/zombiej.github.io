@@ -1,10 +1,11 @@
 import React from 'react';
 import { connect } from 'dva';
-import { Tag, Card, Spin, Icon } from 'antd';
+import { Tag, Card, Spin, Icon, Modal } from 'antd';
 import showdown from 'showdown';
 import moment from 'moment';
+import router from 'umi/router';
 
-import styles from './$id.less';
+import styles from './index.less';
 
 const converter = new showdown.Converter();
 
@@ -42,6 +43,33 @@ class Article extends React.Component {
     this.refreshHTML();
   }
 
+  onEdit = () => {
+    const { article } = this.state;
+
+    router.push(`/blog/${article.createTime}/edit`);
+  };
+
+  onDelete = () => {
+    const { article } = this.state;
+    const { dispatch } = this.props;
+
+    Modal.confirm({
+      title: 'Are you sure delete this article?',
+      okText: 'Delete',
+      okType: 'danger',
+      cancelText: 'Cancel',
+      maskClosable: true,
+      onOk() {
+        dispatch({
+          type: 'article/deleteArticle',
+          id: article.createTime,
+        }).then(() => {
+          router.push('/blog');
+        });
+      },
+    });
+  };
+
   refreshHTML = () => {
     const { article } = this.state;
     if (this.article !== article) {
@@ -55,7 +83,6 @@ class Article extends React.Component {
   render() {
     const { article, html } = this.state;
     const { dateFormat, isDev } = this.props;
-    console.log('>>>', article);
 
     if (!article) {
       return <Spin />;
@@ -66,9 +93,15 @@ class Article extends React.Component {
     let $extra;
     if (isDev) {
       $extra = (
-        <a>
-          <Icon type="edit" /> 编辑
-        </a>
+        <div>
+          <a onClick={this.onEdit}>
+            <Icon type="edit" /> 编辑
+          </a>
+          {' | '}
+          <a style={{ color: '#f5222d' }} onClick={this.onDelete}>
+            <Icon type="delete" /> 删除
+          </a>
+        </div>
       );
     }
 

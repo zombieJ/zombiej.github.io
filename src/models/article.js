@@ -25,7 +25,7 @@ const model = {
       });
     },
 
-    *saveArticle(action, { call, put }) {
+    *saveArticle(action, { call }) {
       yield call(request, '/data/articles/new', {
         method: 'POST',
         headers: {
@@ -33,6 +33,27 @@ const model = {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(action),
+      });
+    },
+
+    *editArticle(action, { call }) {
+      yield call(request, '/data/articles/edit', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(action),
+      });
+    },
+
+    *deleteArticle({ id }, { call, put }) {
+      yield call(request, `/data/articles/delete/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
       });
     },
   },

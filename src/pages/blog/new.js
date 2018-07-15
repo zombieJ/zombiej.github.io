@@ -63,10 +63,21 @@ class New extends React.Component {
       this.$input.focus();
     }, 100);
 
+    // Collapse the sidebar
     this.props.dispatch({
       type: 'global/triggerCollapse',
       collapsed: true,
     });
+
+    // Set article
+    const { article, form: { setFieldsValue } } = this.props;
+    if (article) {
+      setFieldsValue({
+        title: article.title,
+        content: article.content,
+        tagStr: (article.tags || []).join(','),
+      });
+    }
   }
 
   onFileDragOver = (event) => {
@@ -131,7 +142,7 @@ class New extends React.Component {
 
     if (this.state.lock) return;
 
-    const { form } = this.props;
+    const { form, article } = this.props;
 
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
@@ -143,10 +154,11 @@ class New extends React.Component {
         this.$submit.focus();
 
         this.props.dispatch({
-          type: 'article/saveArticle',
+          type: article ? 'article/editArticle' : 'article/saveArticle',
           title,
           tags,
           content,
+          createTime: article.createTime,
         }).then(() => {
           this.setState({ lock: false });
           message.success(
@@ -164,8 +176,8 @@ class New extends React.Component {
   };
 
   render() {
-    const { title, tagStr, content, contentHTML, lock } = this.state;
-    const { getFieldDecorator } = this.props.form;
+    const { contentHTML, lock } = this.state;
+    const { article, form: { getFieldDecorator } } = this.props;
 
     return (
       <div onKeyDown={this.onKeyDown}>
@@ -212,7 +224,9 @@ class New extends React.Component {
                 
                 
                 <div>
-                  <Button ref={this.setSumbitRef} type="primary" htmlType="submit">保存文章</Button>
+                  <Button ref={this.setSumbitRef} type="primary" htmlType="submit">
+                    {article ? '更新文章' : '保存文章'}
+                  </Button>
                 </div>
               </div>
             </Form>

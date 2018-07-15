@@ -59,7 +59,11 @@ class Blog extends React.Component {
             renderItem={({ createTime, title, introduction, thumbnail, tags }) => (
               <List.Item
                 key={createTime}
-                extra={<img width={272} alt={title} src={`/${thumbnail}`} />}
+                extra={
+                  thumbnail && <Link to={`/blog/${createTime}`}>
+                    <img width={272} alt={title} src={`/${thumbnail}`} />
+                  </Link>
+                }
               >
                 <List.Item.Meta
                   title={
@@ -83,7 +87,9 @@ class Blog extends React.Component {
                     </span>
                   }
                 />
-                {introduction}
+                <Link to={`/blog/${createTime}`} className={styles.introduction}>
+                  {introduction}
+                </Link>
               </List.Item>
             )}
           />
