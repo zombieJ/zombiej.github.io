@@ -4,7 +4,9 @@ export default {
   'get /data/list.json': function (_, res) {
     fse.readJson('./data/list.json')
       .then(json => {
-        res.json(json);
+        setTimeout(() => {
+          res.json(json);
+        }, 1000);
       })
       .catch(err => {
         console.error(err);

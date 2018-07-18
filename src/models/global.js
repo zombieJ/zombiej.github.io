@@ -12,6 +12,7 @@ const model = {
     title: '-',
     dateFormat: 'YYYY-MM-DD',
     collapse: false,
+    isMobile: true,
   },
   subscriptions: {
     setup({ history, dispatch }) {
@@ -55,7 +56,13 @@ const model = {
         ...state,
         collapsed,
       };
-    }
+    },
+    resize(state, { width }) {
+      return {
+        ...state,
+        isMobile: width < 600,
+      };
+    },
   },
 };
 

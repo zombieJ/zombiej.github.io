@@ -5,13 +5,16 @@ import { connect } from 'dva';
 
 import './index.less';
 
-const { Content, Sider } = Layout;
+const { Content, Sider, Header } = Layout;
 
 class Main extends React.Component {
   componentDidMount() {
     this.props.dispatch({
       type: 'global/init',
     });
+
+    window.addEventListener('resize', this.refreshWinSize);
+    this.refreshWinSize();
   }
 
   onCollapse = (collapsed) => {
@@ -21,12 +24,19 @@ class Main extends React.Component {
     });
   };
 
+  refreshWinSize = () => {
+    this.props.dispatch({
+      type: 'global/resize',
+      width: window.innerWidth,
+    });
+  };
+
   render() {
-    const { isDev, children, pathname, collapsed } = this.props;
+    const { isDev, children, pathname, collapsed, isMobile } = this.props;
 
     let $adminMenu;
 
-    if (isDev) {
+    if (isDev && !isMobile) {
       $adminMenu = [
         <Menu.Item key="/config">
           <Link to="/config">
@@ -44,43 +54,65 @@ class Main extends React.Component {
       ];
     }
 
-    return (
-      <Layout style={{ minHeight: '100vh' }}>
-        <Sider
-          collapsible
-          onCollapse={this.onCollapse}
-          collapsed={collapsed}
-        >
-          <div className="logo" />
-          <Menu theme="dark" mode="inline" selectedKeys={[pathname]}>
-            {$adminMenu}
-            
-            <Menu.Item key="/blog">
-              <Link to="/blog">
-                <Icon type={pathname === '/blog' ? 'folder-open' : 'folder'} />
-                <span className="nav-text">博客</span>
-              </Link>
-            </Menu.Item>
-          </Menu>
-        </Sider>
-        <Layout>
-          {/* <Header style={{ background: '#fff', padding: 0 }} /> */}
-          <Content style={{ padding: '24px 16px 0', overflow: 'initial', minHeight: '100vh' }}>
-            {children}
-          </Content>
-          {/* <Footer style={{ textAlign: 'center' }}>
-            Ant Design ©2016 Created by Ant UED
-          </Footer> */}
+    const $menu = (
+      <Menu
+        theme="dark"
+        mode={isMobile ? 'horizontal' : 'inline'}
+        selectedKeys={[pathname]}
+        style={isMobile ? { lineHeight: '64px' } : {}}
+      >
+        {$adminMenu}
+        
+        <Menu.Item key="/blog">
+          <Link to="/blog">
+            <Icon type={pathname === '/blog' ? 'folder-open' : 'folder'} />
+            <span className="nav-text">博客</span>
+          </Link>
+        </Menu.Item>
+      </Menu>
+    );
+
+    // 宽屏
+    if (!isMobile) {
+      return (
+        <Layout style={{ minHeight: '100vh' }}>
+          <Sider
+            collapsible
+            onCollapse={this.onCollapse}
+            collapsed={collapsed}
+          >
+            <div className="logo" />
+            {$menu}
+          </Sider>
+          <Layout>
+            <Content style={{ padding: '24px 16px 0', overflow: 'initial', minHeight: '100vh' }}>
+              {children}
+            </Content>
+          </Layout>
         </Layout>
+      );
+    }
+
+    // 移动设备
+    return (
+      <Layout>
+        <Header>
+          <div className="logo" />
+          {$menu}
+        </Header>
+        <Content style={{ padding: '0', background: '#FFF' }}>
+          {children}
+        </Content>
       </Layout>
     );
   }
 }
 
-const mapState = ({ global: { isDev, pathname, collapsed } }) => ({
+const mapState = ({ global: { isDev, pathname, collapsed, isMobile } }) => ({
   isDev,
   pathname,
   collapsed,
+  isMobile,
 });
 
 export default connect(mapState)(Main);

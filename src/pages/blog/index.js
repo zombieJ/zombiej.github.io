@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'dva';
-import { List, Card, Tag, Select } from 'antd';
+import { List, Card, Tag, Select, Spin } from 'antd';
 import Link from 'umi/link';
 import moment from 'moment';
 
@@ -25,10 +25,24 @@ class Blog extends React.Component {
 
   render() {
     const { tag } = this.state;
-    const { dateFormat, list = [], title } = this.props;
+    const { dateFormat, list, title, isMobile } = this.props;
+
+    // Loading status
+    if (!list) {
+      return (
+        <div
+          style={{
+            textAlign: 'center',
+            marginTop: isMobile ? 16 : null,
+          }}
+        >
+          <Spin />
+        </div>
+      );
+    }
 
     let allTags = [];
-    list.forEach(({ tags }) => {
+    (list || []).forEach(({ tags }) => {
       allTags = [...allTags, ...tags];
     });
     const tagList = Array.from(new Set(allTags));
@@ -43,7 +57,7 @@ class Blog extends React.Component {
       </Select>
     );
 
-    let filteredList = list;
+    let filteredList = list || [];
     if (tag) {
       filteredList = filteredList.filter(({ tags }) => tags.indexOf(tag) !== -1);
     } 
@@ -53,6 +67,7 @@ class Blog extends React.Component {
         <Card title={title} extra={$extra}>
           <List
             itemLayout="vertical"
+            className={styles.list}
             size="large"
             pagination={{ pageSize: 10 }}
             dataSource={filteredList}
@@ -99,8 +114,9 @@ class Blog extends React.Component {
   }
 }
 
-const mapState = ({ global: { dateFormat, title },article: { list } }) => ({
+const mapState = ({ global: { dateFormat, title, isMobile },article: { list } }) => ({
   dateFormat,
+  isMobile,
   list,
   title,
 });

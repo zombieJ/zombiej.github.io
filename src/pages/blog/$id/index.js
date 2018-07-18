@@ -82,10 +82,19 @@ class Article extends React.Component {
 
   render() {
     const { article, html } = this.state;
-    const { dateFormat, isDev } = this.props;
+    const { dateFormat, isDev, isMobile } = this.props;
 
     if (!article) {
-      return <Spin />;
+      return (
+        <div
+          style={{
+            textAlign: 'center',
+            marginTop: isMobile ? 16 : null,
+          }}
+        >
+          <Spin />
+        </div>
+      );
     }
 
     const { title, tags = [], createTime } = article;
@@ -126,8 +135,9 @@ class Article extends React.Component {
   }
 }
 
-const mapState = ({ global: { dateFormat, isDev }, article: { articles } }) => ({
+const mapState = ({ global: { dateFormat, isDev, isMobile }, article: { articles } }) => ({
   isDev,
+  isMobile,
   dateFormat,
   articles,
 });

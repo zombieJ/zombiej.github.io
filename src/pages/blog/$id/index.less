@@ -13,5 +13,18 @@
 .content {
   img {
     max-width: 100%;
+    display: block;
+    margin: 0 auto;
+    max-height: 600px;
+    max-height: 60vh;
+    object-fit: cover;
+  }
+}
+
+@media (max-width: 600px) {
+  .content {
+    img {
+      max-height: 200px;
+    }
   }
 }
