@@ -69,6 +69,13 @@ class Main extends React.Component {
             <span className="nav-text">博客</span>
           </Link>
         </Menu.Item>
+
+        <Menu.Item key="/memory">
+          <Link to="/memory">
+            <Icon type={pathname === '/memory' ? 'smile-o' : 'meh-o'} />
+            <span className="nav-text">回忆</span>
+          </Link>
+        </Menu.Item>
       </Menu>
     );
 
