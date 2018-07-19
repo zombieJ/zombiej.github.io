@@ -7,7 +7,7 @@ export default {
   },
 
   'post /data/assets/upload': function(req, res) {
-    const fileName = `${Date.now()}_${req.body.name}`;
+    const fileName = `${Date.now()}_${req.body.name}`.replace(/\s/g, '');
 
     const base64Data = req.body.base64.replace(/^data:image\/png;base64,/, '');
     fse
