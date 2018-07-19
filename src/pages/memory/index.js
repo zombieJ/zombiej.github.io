@@ -2,8 +2,6 @@ import React from 'react';
 import { Card, Tooltip, Button, Icon, Spin, Modal } from 'antd';
 import { connect } from 'dva';
 
-import { isDev } from '../../utils/env';
-
 import MemoryEdit from './components/Edit';
 import styles from './index.less';
 
@@ -59,7 +57,7 @@ class Memory extends React.Component {
     }
 
     let $extra;
-    if (isDev) {
+    if (process.env.NODE_ENV === 'development') {
       $extra = (
         <div>
           <Button size="small" type="primary" onClick={this.onCreateMemory}>
@@ -89,7 +87,7 @@ class Memory extends React.Component {
                 <Tooltip key={index} title={$title} overlayClassName={styles.tooltip}>
                   <li>
                     <img alt={title} src={`/${thumbnail}`} />
-                    {isDev &&
+                    {process.env.NODE_ENV === 'development' &&
                       <ul className={styles.operations}>
                         <li role="button" className={styles.delete} onClick={() => { this.onDeleteMemory(memory); }}>
                           <Icon type="delete" />

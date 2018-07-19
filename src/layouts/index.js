@@ -3,8 +3,6 @@ import { Layout, Menu, Icon } from 'antd';
 import Link from 'umi/link';
 import { connect } from 'dva';
 
-import { isDev } from '../utils/env';
-
 import './index.less';
 
 const { Content, Sider, Header } = Layout;
@@ -38,7 +36,7 @@ class Main extends React.Component {
 
     let $adminMenu;
 
-    if (isDev && !isMobile) {
+    if (process.env.NODE_ENV === 'development' && !isMobile) {
       $adminMenu = [
         <Menu.Item key="/config">
           <Link to="/config">

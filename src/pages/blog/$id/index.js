@@ -5,8 +5,6 @@ import showdown from 'showdown';
 import moment from 'moment';
 import router from 'umi/router';
 
-import { isDev } from '../../../utils/env';
-
 import styles from './index.less';
 
 const converter = new showdown.Converter();
@@ -57,9 +55,7 @@ class Article extends React.Component {
 
     Modal.confirm({
       title: 'Are you sure delete this article?',
-      okText: 'Delete',
       okType: 'danger',
-      cancelText: 'Cancel',
       maskClosable: true,
       onOk() {
         dispatch({
@@ -102,7 +98,7 @@ class Article extends React.Component {
     const { title, tags = [], createTime } = article;
 
     let $extra;
-    if (isDev) {
+    if (process.env.NODE_ENV === 'development') {
       $extra = (
         <div>
           <a onClick={this.onEdit}>
