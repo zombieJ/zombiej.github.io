@@ -1,6 +1,8 @@
 import React from 'react';
-import { Card, Tooltip, Button, Icon, Spin } from 'antd';
+import { Card, Tooltip, Button, Icon, Spin, Modal } from 'antd';
 import { connect } from 'dva';
+
+import { isDev } from '../../utils/env';
 
 import MemoryEdit from './components/Edit';
 import styles from './index.less';
@@ -16,12 +18,30 @@ class Memory extends React.Component {
     this.$memory.createMemory();
   };
 
+  onDeleteMemory = (memory) => {
+    Modal.confirm({
+      title: '删除这段记忆吗？',
+      okType: 'danger',
+      onOk: () => {
+        const { list, dispatch } = this.props;
+        dispatch({
+          type: 'memory/saveMemories',
+          list: list.filter(mem => mem !== memory),
+        }).then(() => {
+          dispatch({
+            type: 'memory/loadList',
+          })
+        });
+      },
+    });
+  };
+
   setMemoryRef = (ele) => {
     this.$memory = ele;
   };
 
   render() {
-    const { list, isDev, isMobile } = this.props;
+    const { list, isMobile } = this.props;
     // console.log('>>>', list);
 
     // Loading status
@@ -56,7 +76,8 @@ class Memory extends React.Component {
           extra={$extra}
         >
           <ul className={styles.list}>
-            {(list || []).map(({ title, description, thumbnail }, index) => {
+            {(list || []).map((memory, index) => {
+              const { title, description, thumbnail } = memory;
               const $title = (
                 <div>
                   <h3>{title}</h3>
@@ -70,7 +91,7 @@ class Memory extends React.Component {
                     <img alt={title} src={`/${thumbnail}`} />
                     {isDev &&
                       <ul className={styles.operations}>
-                        <li role="button" className={styles.delete}>
+                        <li role="button" className={styles.delete} onClick={() => { this.onDeleteMemory(memory); }}>
                           <Icon type="delete" />
                         </li>
                         <li role="button">
@@ -94,8 +115,7 @@ class Memory extends React.Component {
   }
 }
 
-const mapState = ({ global: { isDev, isMobile }, memory: { list } }) => ({
-  isDev,
+const mapState = ({ global: { isMobile }, memory: { list } }) => ({
   isMobile,
   list,
 });

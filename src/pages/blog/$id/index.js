@@ -5,6 +5,8 @@ import showdown from 'showdown';
 import moment from 'moment';
 import router from 'umi/router';
 
+import { isDev } from '../../../utils/env';
+
 import styles from './index.less';
 
 const converter = new showdown.Converter();
@@ -82,7 +84,7 @@ class Article extends React.Component {
 
   render() {
     const { article, html } = this.state;
-    const { dateFormat, isDev, isMobile } = this.props;
+    const { dateFormat, isMobile } = this.props;
 
     if (!article) {
       return (
@@ -135,8 +137,7 @@ class Article extends React.Component {
   }
 }
 
-const mapState = ({ global: { dateFormat, isDev, isMobile }, article: { articles } }) => ({
-  isDev,
+const mapState = ({ global: { dateFormat, isMobile }, article: { articles } }) => ({
   isMobile,
   dateFormat,
   articles,

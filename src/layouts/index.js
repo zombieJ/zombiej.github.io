@@ -3,6 +3,8 @@ import { Layout, Menu, Icon } from 'antd';
 import Link from 'umi/link';
 import { connect } from 'dva';
 
+import { isDev } from '../utils/env';
+
 import './index.less';
 
 const { Content, Sider, Header } = Layout;
@@ -32,7 +34,7 @@ class Main extends React.Component {
   };
 
   render() {
-    const { isDev, children, pathname, collapsed, isMobile } = this.props;
+    const { children, pathname, collapsed, isMobile } = this.props;
 
     let $adminMenu;
 
@@ -115,8 +117,7 @@ class Main extends React.Component {
   }
 }
 
-const mapState = ({ global: { isDev, pathname, collapsed, isMobile } }) => ({
-  isDev,
+const mapState = ({ global: { pathname, collapsed, isMobile } }) => ({
   pathname,
   collapsed,
   isMobile,

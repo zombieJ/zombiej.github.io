@@ -1,4 +1,3 @@
-// import { routerRedux } from 'dva/router';
 import request from '../utils/request';
 
 const updateTitle = (title) => {
@@ -8,7 +7,6 @@ const updateTitle = (title) => {
 const model = {
   namespace: 'global',
   state: {
-    isDev: process.env.NODE_ENV === 'development',
     title: '-',
     dateFormat: 'YYYY-MM-DD',
     collapse: false,
