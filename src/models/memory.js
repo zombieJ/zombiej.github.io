@@ -14,14 +14,14 @@ const model = {
       });
     },
 
-    *saveMemory(action, { call }) {
-      yield call(request, '/data/memories/new', {
+    *saveMemories(action, { call }) {
+      yield call(request, '/data/memories/save', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(action),
+        body: JSON.stringify(action.list),
       });
     },
   },

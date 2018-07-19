@@ -22,15 +22,16 @@ class Edit extends React.Component {
   }
 
   onOk = () => {
-    this.props.form.validateFieldsAndScroll((err, values) => {
+    const { form: { validateFieldsAndScroll }, list, dispatch } = this.props;
+    validateFieldsAndScroll((err, values) => {
       if (!err) {
-        this.props.dispatch({
-          type: this.state.status === STATUS_CREATE ? 'memory/saveMemory' : 'memory/editMemory',
-          ...values,
+        dispatch({
+          type: 'memory/saveMemories',
+          list: [...list, values],
         }).then(() => {
           this.setState({ status: STATUS_NONE });
           this.onResetForm();
-          this.props.dispatch({
+          dispatch({
             type: 'memory/loadList',
           });
         });
@@ -159,6 +160,10 @@ class Edit extends React.Component {
   }
 }
 
-export default connect()(
+const mapState = ({ memory: { list } }) => ({
+  list,
+});
+
+export default connect(mapState)(
   Form.create()(Edit)
 );

@@ -14,17 +14,13 @@ export default {
       })
   },
 
-  'post /data/memories/new': function(req, res) {
-    const createTime = Date.now();
+  'post /data/memories/save': function(req, res) {
+    const json = {
+      memories: req.body,
+    };
 
-    const { title, description, thumbnail } = req.body;
-
-    fse.readJson('./data/memoryList.json')
-      .then((json) => {
-        json.memories.push({ title, description, thumbnail });
-
-        return fse.writeFile('./data/memoryList.json', JSON.stringify(json, null, '\t'), 'utf8')
-      })
+    fse
+      .writeFile('./data/memoryList.json', JSON.stringify(json, null, '\t'), 'utf8')
       .then(() => {
         res.json({ success: true });
       })
