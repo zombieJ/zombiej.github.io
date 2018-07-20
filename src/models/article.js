@@ -24,6 +24,34 @@ const model = {
         id,
       });
     },
+  },
+  reducers: {
+    updateState(state, newState) {
+      const my = { ...newState };
+      delete my.type;
+
+      return {
+        ...state,
+        ...my,
+      };
+    },
+
+    updateArticle(state, { article, id }) {
+      return {
+        ...state,
+        articles: {
+          ...state.articles,
+          [id]: article,
+        },
+      };
+    },
+  },
+};
+
+// 添加开发需要控制
+if (process.env.NODE_ENV === 'development') {
+  model.effects = {
+    ...model.effects,
 
     *saveArticle(action, { call }) {
       yield call(request, '/data/articles/new', {
@@ -56,28 +84,7 @@ const model = {
         },
       });
     },
-  },
-  reducers: {
-    updateState(state, newState) {
-      const my = { ...newState };
-      delete my.type;
-
-      return {
-        ...state,
-        ...my,
-      };
-    },
-
-    updateArticle(state, { article, id }) {
-      return {
-        ...state,
-        articles: {
-          ...state.articles,
-          [id]: article,
-        },
-      };
-    },
-  },
-};
+  };
+}
 
 export default model;

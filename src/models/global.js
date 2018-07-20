@@ -26,17 +26,11 @@ const model = {
     *init(_, { call, put }) {
       const config = yield call(request, '/data/config.json');
       yield put({
-        type: 'updateConfig',
-        ...config,
-      });
-    },
-    *updateConfig(config, { put }) {
-      updateTitle(config.title);
-
-      yield put({
-        ...config,
         type: 'updateState',
+        ...config,
       });
+
+      updateTitle(config.title);
     },
   },
   reducers: {
@@ -49,6 +43,7 @@ const model = {
         ...my,
       };
     },
+
     triggerCollapse(state, { collapsed }) {
       return {
         ...state,
@@ -65,5 +60,21 @@ const model = {
 };
 
 updateTitle(model.state.title);
+
+// 添加开发需要控制
+if (process.env.NODE_ENV === 'development') {
+  model.effects = {
+    ...model.effects,
+
+    *updateConfig(config, { put }) {
+      updateTitle(config.title);
+
+      yield put({
+        ...config,
+        type: 'updateState',
+      });
+    },
+  };
+}
 
 export default model;
