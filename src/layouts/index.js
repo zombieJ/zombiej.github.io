@@ -3,7 +3,7 @@ import { Layout, Menu, Icon } from 'antd';
 import Link from 'umi/link';
 import { connect } from 'dva';
 
-import './index.less';
+import styles from './index.less';
 
 const { Content, Sider, Header } = Layout;
 
@@ -32,7 +32,7 @@ class Main extends React.Component {
   };
 
   render() {
-    const { children, pathname, collapsed, isMobile } = this.props;
+    const { children, pathname, collapsed, isMobile, abbrTitle, title } = this.props;
 
     let $adminMenu;
 
@@ -88,7 +88,9 @@ class Main extends React.Component {
             onCollapse={this.onCollapse}
             collapsed={collapsed}
           >
-            <div className="logo" />
+            <div className={styles.logo}>
+              {title}
+            </div>
             {$menu}
           </Sider>
           <Layout>
@@ -103,8 +105,10 @@ class Main extends React.Component {
     // 移动设备
     return (
       <Layout>
-        <Header>
-          <div className="logo" />
+        <Header className={styles.mobileHeader}>
+          <div className={styles.logo}>
+            {abbrTitle}
+          </div>
           {$menu}
         </Header>
         <Content style={{ padding: '0', background: '#FFF' }}>
@@ -115,7 +119,9 @@ class Main extends React.Component {
   }
 }
 
-const mapState = ({ global: { pathname, collapsed, isMobile } }) => ({
+const mapState = ({ global: { title, pathname, collapsed, isMobile, abbrTitle } }) => ({
+  title,
+  abbrTitle,
   pathname,
   collapsed,
   isMobile,

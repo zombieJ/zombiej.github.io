@@ -10,5 +10,17 @@ export default {
         console.error(err);
         res.json(err);
       })
-  }
+  },
+
+  'post /data/config/save': function(req, res) {
+    fse
+      .writeFile('./data/config.json', JSON.stringify(req.body, null, '\t'), 'utf8')
+      .then(() => {
+        res.json({ success: true });
+      })
+      .catch((err) => {
+        console.log(err);
+        res.json({ success: false });
+      });
+  },
 }

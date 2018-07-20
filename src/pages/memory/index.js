@@ -109,12 +109,12 @@ class Memory extends React.Component {
     return (
       <div>
         <Card
-          title="回忆时刻"
+          title="朝花夕拾"
           extra={$extra}
         >
           <ul className={styles.list}>
             {(list || []).map((memory, index) => {
-              const { title, description, thumbnail } = memory;
+              const { title, description } = memory;
               const $title = (
                 <div>
                   <h3>{title}</h3>

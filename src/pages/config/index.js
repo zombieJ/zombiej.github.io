@@ -22,7 +22,7 @@ class Config extends React.Component {
 
   render() {
     const {
-      title, dateFormat,
+      title, abbrTitle, dateFormat,
       form: { getFieldDecorator },
     } = this.props;
 
@@ -34,6 +34,19 @@ class Config extends React.Component {
           >
             {getFieldDecorator('title', {
               initialValue: title,
+              rules: [{
+                required: true,
+              }],
+            })(
+              <Input autoComplete="off" />
+            )}
+          </FormItem>
+
+          <FormItem
+            label="Abbr Title"
+          >
+            {getFieldDecorator('abbrTitle', {
+              initialValue: abbrTitle,
               rules: [{
                 required: true,
               }],
@@ -64,8 +77,9 @@ class Config extends React.Component {
   }
 }
 
-const mapState = ({ global: { title, dateFormat } }) => ({
+const mapState = ({ global: { title, abbrTitle, dateFormat } }) => ({
   title,
+  abbrTitle,
   dateFormat,
 });
 

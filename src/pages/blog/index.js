@@ -25,7 +25,7 @@ class Blog extends React.Component {
 
   render() {
     const { tag } = this.state;
-    const { dateFormat, list, title, isMobile } = this.props;
+    const { dateFormat, list, isMobile } = this.props;
 
     // Loading status
     if (!list) {
@@ -64,7 +64,7 @@ class Blog extends React.Component {
 
     return (
       <div>
-        <Card title={title} extra={$extra}>
+        <Card title="阳光不锈" extra={$extra}>
           <List
             itemLayout="vertical"
             className={styles.list}
@@ -114,11 +114,10 @@ class Blog extends React.Component {
   }
 }
 
-const mapState = ({ global: { dateFormat, title, isMobile },article: { list } }) => ({
+const mapState = ({ global: { dateFormat, isMobile }, article: { list } }) => ({
   dateFormat,
   isMobile,
   list,
-  title,
 });
 
 export default connect(mapState)(Blog);

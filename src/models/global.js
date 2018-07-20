@@ -8,6 +8,7 @@ const model = {
   namespace: 'global',
   state: {
     title: '-',
+    abbrTitle: '',
     dateFormat: 'YYYY-MM-DD',
     collapse: false,
     isMobile: true,
@@ -66,8 +67,20 @@ if (process.env.NODE_ENV === 'development') {
   model.effects = {
     ...model.effects,
 
-    *updateConfig(config, { put }) {
+    *updateConfig(action, { put, call }) {
+      const { ...config } = action;
+      delete config.type;
+
       updateTitle(config.title);
+
+      yield call(request, '/data/config/save', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(config),
+      });
 
       yield put({
         ...config,
