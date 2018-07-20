@@ -4,6 +4,28 @@ import { connect } from 'dva';
 
 import styles from './index.less';
 
+class MemImg extends React.Component {
+  onClick = () => {
+    const { onClick, memory } = this.props;
+    onClick(memory);
+  };
+
+  render() {
+    const { onClick, memory: { title, thumbnail } } = this.props;
+
+    const props = {};
+    if (onClick) {
+      props.onClick = this.onClick;
+      props.role = 'button';
+      props.tabIndex = -1;
+    }
+
+    return (
+      <img  alt={title} src={`/${thumbnail}`} {...props} />
+    );
+  }
+}
+
 // 线上也不需要这个组件
 const MemoryEdit = process.env.NODE_ENV === 'development' ?
   require('./components/Edit').default : null;
@@ -47,6 +69,14 @@ class Memory extends React.Component {
       type: 'memory/loadList',
     });
   }
+
+  onMemoryClick = ({ title, description }) => {
+    Modal.info({
+      title,
+      content: description,
+      maskClosable: true,
+    });
+  };
 
   render() {
     const { list, isMobile } = this.props;
@@ -92,24 +122,28 @@ class Memory extends React.Component {
                 </div>
               );
 
-              return (
+              const $li = (
+                <li key={index}>
+                  <MemImg onClick={isMobile && this.onMemoryClick} memory={memory} />
+                  {process.env.NODE_ENV === 'development' && !isMobile &&
+                    <ul className={styles.operations}>
+                      <li role="button" className={styles.delete} onClick={() => { this.onDeleteMemory(memory); }}>
+                        <Icon type="delete" />
+                      </li>
+                      <li role="button">
+                        <Icon type="caret-left" />
+                      </li>
+                      <li role="button">
+                        <Icon type="caret-right" />
+                      </li>
+                    </ul>
+                  }
+                </li>
+              );
+
+              return isMobile ? $li : (
                 <Tooltip key={index} title={$title} overlayClassName={styles.tooltip}>
-                  <li>
-                    <img alt={title} src={`/${thumbnail}`} />
-                    {process.env.NODE_ENV === 'development' &&
-                      <ul className={styles.operations}>
-                        <li role="button" className={styles.delete} onClick={() => { this.onDeleteMemory(memory); }}>
-                          <Icon type="delete" />
-                        </li>
-                        <li role="button">
-                          <Icon type="caret-left" />
-                        </li>
-                        <li role="button">
-                          <Icon type="caret-right" />
-                        </li>
-                      </ul>
-                    }
-                  </li>
+                  {$li}
                 </Tooltip>
               );
             })}
