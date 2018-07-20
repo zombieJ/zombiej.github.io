@@ -77,6 +77,8 @@ class New extends React.Component {
         content: article.content,
         tagStr: (article.tags || []).join(','),
       });
+
+      this.throttleRefreshArtitle(article.content);
     }
   }
 

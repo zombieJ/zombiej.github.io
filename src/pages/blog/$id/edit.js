@@ -16,7 +16,7 @@ class Edit extends React.Component {
     const article = articles[params.id];
 
     if (!article) {
-      return <Spin />
+      return <Spin />;
     }
 
     return (

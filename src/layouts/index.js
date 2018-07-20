@@ -89,7 +89,7 @@ class Main extends React.Component {
             collapsed={collapsed}
           >
             <div className={styles.logo}>
-              {title}
+              {collapsed ? abbrTitle : title}
             </div>
             {$menu}
           </Sider>
