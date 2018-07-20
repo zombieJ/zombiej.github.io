@@ -2,45 +2,54 @@ import React from 'react';
 import { Card, Tooltip, Button, Icon, Spin, Modal } from 'antd';
 import { connect } from 'dva';
 
-import MemoryEdit from './components/Edit';
 import styles from './index.less';
 
+// 线上也不需要这个组件
+const MemoryEdit = process.env.NODE_ENV === 'development' ?
+  require('./components/Edit').default : null;
+
 class Memory extends React.Component {
+  constructor() {
+    super();
+
+    // 线上环境不需要
+    if (process.env.NODE_ENV === 'development') {
+      this.onCreateMemory = () => {
+        this.$memory.createMemory();
+      };
+    
+      this.onDeleteMemory = (memory) => {
+        Modal.confirm({
+          title: '删除这段记忆吗？',
+          okType: 'danger',
+          onOk: () => {
+            const { list, dispatch } = this.props;
+            dispatch({
+              type: 'memory/saveMemories',
+              list: list.filter(mem => mem !== memory),
+            }).then(() => {
+              dispatch({
+                type: 'memory/loadList',
+              })
+            });
+          },
+        });
+      };
+    
+      this.setMemoryRef = (ele) => {
+        this.$memory = ele;
+      };
+    }
+  }
+
   componentDidMount() {
     this.props.dispatch({
       type: 'memory/loadList',
     });
   }
 
-  onCreateMemory = () => {
-    this.$memory.createMemory();
-  };
-
-  onDeleteMemory = (memory) => {
-    Modal.confirm({
-      title: '删除这段记忆吗？',
-      okType: 'danger',
-      onOk: () => {
-        const { list, dispatch } = this.props;
-        dispatch({
-          type: 'memory/saveMemories',
-          list: list.filter(mem => mem !== memory),
-        }).then(() => {
-          dispatch({
-            type: 'memory/loadList',
-          })
-        });
-      },
-    });
-  };
-
-  setMemoryRef = (ele) => {
-    this.$memory = ele;
-  };
-
   render() {
     const { list, isMobile } = this.props;
-    // console.log('>>>', list);
 
     // Loading status
     if (!list) {
@@ -107,7 +116,9 @@ class Memory extends React.Component {
           </ul>
         </Card>
 
-        <MemoryEdit setRef={this.setMemoryRef} />
+        {process.env.NODE_ENV === 'development' &&
+          <MemoryEdit setRef={this.setMemoryRef} />
+        }
       </div>
     );
   }
