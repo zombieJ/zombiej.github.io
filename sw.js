@@ -32,12 +32,18 @@ self.addEventListener('activate', event => {
   event.waitUntil(self.clients.claim());
 });
 
+
+// const isNavigationReq = (req) => (req.mode === 'navigate' || (req.method === 'GET' && req.headers.get('accept').includes('text/html')))
+// const endWithExtension = (req) => Boolean(new URL(req.url).pathname.match(/\.\w+$/))
+// const shouldRedirect = (req) => (isNavigationReq(req) && new URL(req.url).pathname.substr(-1) !== "/" && !endWithExtension(req))
+
 self.addEventListener('fetch', event => {
   if (event.request.method.toUpperCase() !== 'GET') {
     return;
   }
 
-  const fetchPromise = fetch(event.request, { cache: "no-store" });
+  // const fetchPromise = fetch(event.request, { cache: "no-store" });
+  const fetchPromise = fetch(event.request);
   const fetchPromiseClone = fetchPromise.then(res => res.clone());
 
   // 缓存
