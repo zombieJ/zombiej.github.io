@@ -3,6 +3,10 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="Description" content="程序员的博客不一定写程序">
+		<link rel="icon" href="/assets/logo_32.png" sizes="32x32" type="image/png">
+		<link rel="icon" href="/assets/logo_512.png" sizes="512x512" type="image/png">
+		<link rel="manifest" href="/manifest.json">
+		<meta name="theme-color" content="#001529"/>
 		<meta name="apple-mobile-web-app-capable" content="yes">
 		<meta name="apple-mobile-web-app-status-bar-style" content="black">
 		<meta name="format-detection" content="telephone=no">
@@ -12,11 +16,20 @@
 		<link rel="stylesheet" href="/dist/static/umi.css">
 	</head>
 	<body>
+		<noscript>
+			抱歉啦，我的博客需要使用 javascript。看起来你把它禁用了哩~
+		</noscript>
 		<div id="root"></div>
 		<script>
 			window.routerBase = '/';
 			window.publicPath = '/dist/static/';
 		</script>
 		<script src="/dist/static/umi.js"></script>
+
+		<script>
+			if(navigator.serviceWorker) {
+				navigator.serviceWorker.register('/sw.js');
+			}
+		</script>
 	</body>
 </html>

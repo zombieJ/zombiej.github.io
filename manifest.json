@@ -1,0 +1,15 @@
+{
+  "name": "竹林星光",
+  "short_name": "竹林星光",
+  "theme_color": "#001529",
+  "background_color": "#001529",
+  "start_url": "https://aizhuzi.com",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "assets/logo_512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
+}
