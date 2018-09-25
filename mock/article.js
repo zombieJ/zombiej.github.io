@@ -3,7 +3,7 @@ import { refreshList } from './util';
 import Path from 'path';
 
 function saveArticle(createTime, reqBody) {
-  const { content, title, tags } = reqBody;
+  const { content, title, tags, hide } = reqBody;
   console.log('>>>', title, content);
   const thumbnailMatch = content.match(/!\[[^\]]*]\(([^)]*)\)/);
   let thumbnail;
@@ -15,6 +15,7 @@ function saveArticle(createTime, reqBody) {
   const article = {
     title,
     tags,
+    hide,
     content: content.trim(),
     createTime,
     thumbnail,

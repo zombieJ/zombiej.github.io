@@ -9,9 +9,22 @@ const model = {
   effects: {
     *loadList(_, { call, put }) {
       const { articles } = yield call(request, '/data/list.json');
+      let list = articles;
+
+      if (process.env.NODE_ENV === 'development') {
+        list.forEach((aritcle) => {
+          if (aritcle.hide) {
+            aritcle.tags = (aritcle.tags || []);
+            aritcle.tags.push('隐藏');
+          }
+        });
+      } else {
+        list = list.filter(({ hide }) => !hide);
+      }
+
       yield put({
         type: 'updateState',
-        list: articles,
+        list,
       });
     },
 

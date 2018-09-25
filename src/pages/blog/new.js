@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { connect } from 'dva';
-import { Row, Col, Input, Button, message, Form } from 'antd';
+import { Row, Col, Input, Button, message, Form, Checkbox } from 'antd';
 import router from 'umi/router';
 import showdown from 'showdown';
 import throttle from 'lodash.throttle';
@@ -76,6 +76,7 @@ class New extends React.Component {
         title: article.title,
         content: article.content,
         tagStr: (article.tags || []).join(','),
+        hide: article.hide,
       });
 
       this.throttleRefreshArtitle(article.content);
@@ -148,7 +149,7 @@ class New extends React.Component {
 
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        const { title, tagStr = '', content } = values;
+        const { title, tagStr = '', content, hide } = values;
         const tagTrim = tagStr.trim();
         const tags = tagTrim ? tagTrim.split(/,|;|，|；/) : [];
 
@@ -158,6 +159,7 @@ class New extends React.Component {
         this.props.dispatch({
           type: article ? 'article/editArticle' : 'article/saveArticle',
           title,
+          hide,
           tags,
           content,
           createTime: article ? article.createTime : null,
@@ -226,9 +228,26 @@ class New extends React.Component {
                 
                 
                 <div>
-                  <Button ref={this.setSumbitRef} type="primary" htmlType="submit">
-                    {article ? '更新文章' : '保存文章'}
-                  </Button>
+                  <Row>
+                    <Col span={12}>
+                      <Button ref={this.setSumbitRef} type="primary" htmlType="submit">
+                        {article ? '更新文章' : '保存文章'}
+                      </Button>
+                    </Col>
+                    <Col span={12} style={{ textAlign: 'right' }}>
+                      <Form.Item className={classNames(styles['form-item'], styles['flex'])}>
+                        {getFieldDecorator('hide', {
+                          valuePropName: 'checked',
+                        })(
+                          <Checkbox
+                            disabled={lock}
+                          >
+                            隐藏文章
+                          </Checkbox>
+                        )}
+                      </Form.Item>
+                    </Col>
+                  </Row>
                 </div>
               </div>
             </Form>

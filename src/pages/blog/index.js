@@ -58,6 +58,7 @@ class Blog extends React.Component {
     );
 
     let filteredList = list || [];
+
     if (tag) {
       filteredList = filteredList.filter(({ tags }) => tags.indexOf(tag) !== -1);
     } 

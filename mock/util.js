@@ -15,7 +15,7 @@ export function refreshList() {
   const fileList = fse.readdirSync('./data/articles');
   const wrapper = {
     articles: fileList.map((fileName) => {
-      const { title, tags, content, createTime, thumbnail } = fse.readJsonSync(`./data/articles/${fileName}`);
+      const { title, tags, content, createTime, thumbnail, hide } = fse.readJsonSync(`./data/articles/${fileName}`);
 
       const html = converter.makeHtml(content);
       const $div = $('<div>').html(html);
@@ -25,6 +25,7 @@ export function refreshList() {
 
       return {
         title,
+        hide,
         introduction,
         tags,
         thumbnail,
