@@ -1,44 +1,44 @@
 {
-	"memories": [
-		{
-			"thumbnail": "data/assets/1463409712458_真皮沙发.jpg",
-			"title": "皮沙发",
-			"description": "哇，家里有了一套黑色皮沙发。好长一条呢~"
-		},
-		{
-			"thumbnail": "data/assets/1463410480709_冰冻蚊子.jpg",
-			"title": "冰冻蚊子",
-			"description": "家里的新空调太冷了，以至于蚊子都冻得不会飞啦~"
-		},
-		{
-			"title": "水管日",
-			"thumbnail": "data/assets/1470573583574_水管日.jpg",
-			"description": "维修水管，匹夫有责。搞定淘气的水管，让大夏天清水源源而来~"
-		},
-		{
-			"thumbnail": "data/assets/1471358217519_私人展馆.jpg",
-			"title": "私人展馆",
-			"description": "在工作日前往一个艺术展馆，就好像这是你私人的展馆一样！"
-		},
-		{
-			"thumbnail": "data/assets/1471746215249_谜之声.jpg",
-			"title": "你好，谜之声",
-			"description": "在谜之声签售会获得签名并且能有机会进行简短的交流~"
-		},
-		{
-			"thumbnail": "data/assets/1483282899114_智能家居.jpg",
-			"title": "智慧家庭",
-			"description": "好多的传感器，使得你的家似乎自己产生了意识一样！等等，这个台灯是不是在看我？"
-		},
-		{
-			"thumbnail": "data/assets/1483285017035_香炉.jpg",
-			"title": "嗝儿~",
-			"description": "这个陶土雕像做得十分精巧，看起来就像刚刚吃饱了蜡烛在打嗝儿~"
-		},
-		{
-			"thumbnail": "data/assets/1488033330756_你们在说啥.jpg",
-			"title": "“你们在说啥？”",
-			"description": "误入艺术家的小圈子，并且假装是其中一份子！"
-		}
-	]
+  "memories": [
+    {
+      "thumbnail": "data/assets/1463409712458_真皮沙发.jpg",
+      "title": "皮沙发",
+      "description": "哇，家里有了一套黑色皮沙发。好长一条呢~"
+    },
+    {
+      "thumbnail": "data/assets/1463410480709_冰冻蚊子.jpg",
+      "title": "冰冻蚊子",
+      "description": "家里的新空调太冷了，以至于蚊子都冻得不会飞啦~"
+    },
+    {
+      "title": "水管日",
+      "thumbnail": "data/assets/1470573583574_水管日.jpg",
+      "description": "维修水管，匹夫有责。搞定淘气的水管，让大夏天清水源源而来~"
+    },
+    {
+      "thumbnail": "data/assets/1471358217519_私人展馆.jpg",
+      "title": "私人展馆",
+      "description": "在工作日前往一个艺术展馆，就好像这是你私人的展馆一样！"
+    },
+    {
+      "thumbnail": "data/assets/1471746215249_谜之声.jpg",
+      "title": "你好，谜之声",
+      "description": "在谜之声签售会获得签名并且能有机会进行简短的交流~"
+    },
+    {
+      "thumbnail": "data/assets/1483282899114_智能家居.jpg",
+      "title": "智慧家庭",
+      "description": "好多的传感器，使得你的家似乎自己产生了意识一样！等等，这个台灯是不是在看我？"
+    },
+    {
+      "thumbnail": "data/assets/1483285017035_香炉.jpg",
+      "title": "嗝儿~",
+      "description": "这个陶土雕像做得十分精巧，看起来就像刚刚吃饱了蜡烛在打嗝儿~"
+    },
+    {
+      "thumbnail": "data/assets/1488033330756_你们在说啥.jpg",
+      "title": "“你们在说啥？”",
+      "description": "误入艺术家的小圈子，并且假装是其中一份子！"
+    }
+  ]
 }
