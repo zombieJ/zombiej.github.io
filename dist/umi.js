@@ -1485,6 +1485,7 @@
           mode: Ne ? 'horizontal' : 'inline',
           selectedKeys: [o],
           style: Ne ? { lineHeight: '64px' } : {},
+          disabledOverflow: !0,
           children: [
             t,
             Object(Ce['jsx'])(

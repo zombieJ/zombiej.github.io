@@ -69,6 +69,7 @@ export default ({ children }: LayoutProps) => {
       mode={mobile ? 'horizontal' : 'inline'}
       selectedKeys={[pathname]}
       style={mobile ? { lineHeight: '64px' } : {}}
+      disabledOverflow
     >
       {$adminMenu}
 
