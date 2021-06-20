@@ -1,1 +1,0 @@
-webpackJsonp([8],{"04qB":function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0});var u=n("RFtt"),r=n.n(u),a=n("BJ+C"),o=n.n(a),c=r.a.createElement(o.a,{to:"/blog"});t.default=function(){return c}},"BJ+C":function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=void 0;var u=n("4I1C"),r=u.Redirect;t.default=r}});
