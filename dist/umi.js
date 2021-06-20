@@ -72860,6 +72860,7 @@
         m = l.a.useMemo(() => {
           var e = f;
           return (
+            (e = e.filter((e) => !e.hide)),
             o &&
               (e = e.filter((e) => {
                 var t;
@@ -72911,6 +72912,7 @@
                         width: 272,
                         alt: r,
                         src: '/'.concat(o),
+                        style: { maxHeight: 250, objectFit: 'cover' },
                       }),
                     }),
                   children: [

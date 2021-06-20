@@ -50,6 +50,10 @@ export default () => {
   const filteredList = React.useMemo(() => {
     let currentList = articles;
 
+    if (process.env.NODE_ENV !== 'development') {
+      currentList = currentList.filter((article) => !article.hide);
+    }
+
     if (tag) {
       currentList = currentList.filter((report) => report.tags?.includes(tag));
     }
@@ -98,7 +102,12 @@ export default () => {
               extra={
                 thumbnail && (
                   <Link to={`/blog/${createTime}`}>
-                    <img width={272} alt={title} src={`/${thumbnail}`} />
+                    <img
+                      width={272}
+                      alt={title}
+                      src={`/${thumbnail}`}
+                      style={{ maxHeight: 250, objectFit: 'cover' }}
+                    />
                   </Link>
                 )
               }

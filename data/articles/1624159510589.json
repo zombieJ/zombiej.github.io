@@ -1,0 +1,7 @@
+{
+  "title": "又又又一个新的 Blog",
+  "tags": ["gitBlog", "随笔"],
+  "content": "是的，上一次博客更新是我用 umi 重新实现了一版博客。最近想要上传新的回忆时却发现 umi 居然启动不起来了（其实很早就发现了，只是以为 windows 不支持，其实是全部都不行了，笑~），于是不得不把 umi 从 v1 版本升级到了最新版本，顺道也把一些 class component 全部换成了 function component。\n\n随着前端也逐渐工程化起来，你会发现过去在后端遇到的包冲突问题也在前端重演了。每个看起来都差不多，合起来全线崩盘。从错误信息里你也看不出个所以然来。\n\n那么，多年后的又一次更新就这样吧。贴一张近日成为 github top 5 最受欢迎开发者留作纪念（估计以后也没得机会遇到了，哈哈）：\n![](data/assets/1624159921146_most_popular.png)",
+  "createTime": 1624159510589,
+  "thumbnail": "data/assets/1624159921146_most_popular.png"
+}
