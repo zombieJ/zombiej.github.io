@@ -10,7 +10,10 @@ export default {
   'post /data/assets/upload': function (req: Request, res: Response) {
     const fileName = `${Date.now()}_${req.body.name}`.replace(/\s/g, '');
 
-    const base64Data = req.body.base64.replace(/^data:image\/png;base64,/, '');
+    const base64Data = req.body.base64.replace(
+      /^data:image\/(png|jpg|jpeg);base64,/,
+      '',
+    );
     fse
       .writeFile(`./data/assets/${fileName}`, base64Data, 'base64')
       .then(() => {
