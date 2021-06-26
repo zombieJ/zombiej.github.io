@@ -1,0 +1,38 @@
+@border: 1px solid #ccc;
+
+.noteBlock {
+  border-bottom: @border;
+  transition: all 0.3s;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  &:last-child {
+    border-bottom: 0;
+  }
+
+  &:hover {
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+  }
+
+  &.active {
+    background-color: rgba(0, 255, 0, 0.1);
+  }
+
+  .content {
+    flex: auto;
+
+    h3,
+    p {
+      margin: 0;
+    }
+  }
+}
+
+.noteBlockList {
+  display: inline-flex;
+  flex-direction: column;
+  border: @border;
+  border-radius: 2px;
+}

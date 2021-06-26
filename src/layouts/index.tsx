@@ -7,6 +7,7 @@ import {
   FolderOpenOutlined,
   SettingOutlined,
   FileTextOutlined,
+  BarChartOutlined,
 } from '@ant-design/icons';
 import { useLocation, Link } from 'umi';
 import { Layout, Menu } from 'antd';
@@ -84,6 +85,13 @@ export default ({ children }: LayoutProps) => {
         <Link to="/memory">
           {pathname === '/memory' ? <SmileOutlined /> : <MehOutlined />}
           <span className="nav-text">回忆</span>
+        </Link>
+      </Menu.Item>
+
+      <Menu.Item key="/graph" title="可视">
+        <Link to="/graph">
+          <BarChartOutlined />
+          <span className="nav-text">可视</span>
         </Link>
       </Menu.Item>
     </Menu>
