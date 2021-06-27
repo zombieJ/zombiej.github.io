@@ -1,14 +1,18 @@
 import React from 'react';
-import { RightOutlined } from '@ant-design/icons';
-import { Modal, Form, Input } from 'antd';
+import marked from 'marked';
+import { RightOutlined, PlusOutlined } from '@ant-design/icons';
+import { Modal, Form, Input, Typography } from 'antd';
 import classNames from 'classnames';
+import { get, set } from 'lodash';
 import styles from './LinkGraph.less';
 
 const NOTE_WIDTH = 200;
 
+const EMPTY_LIST: Note[] = [];
+
 const LinkGraphContext = React.createContext<{
   editable?: boolean;
-  onEdit: (note: Note) => void;
+  onEdit: (path: number[]) => void;
 }>(null as any);
 
 export interface Note {
@@ -47,45 +51,92 @@ const testNodes: Note[] = [
   },
 ];
 
+// =============================================================================
+// =                                   数据块                                   =
+// =============================================================================
 interface NoteBlockProps {
   note: Note;
   active?: boolean;
-  onClick: React.MouseEventHandler;
+  onSelect?: React.MouseEventHandler;
+  path: number[];
 }
 
-function NoteBlock({ note, active, onClick }: NoteBlockProps) {
+function NoteBlock({ note, active, path, onSelect }: NoteBlockProps) {
   const { editable, onEdit } = React.useContext(LinkGraphContext);
+
+  // >>> Content
+  const html = React.useMemo(
+    () => marked(note.description || ''),
+    [note.description],
+  );
+
+  // >>> Edit
+  const onInternalEdit = (editPath: number[]) => {
+    if (!editable) return;
+
+    onEdit(editPath);
+  };
+
+  // >>> Render
+  let extraNode: React.ReactNode;
+  if (note.children?.length) {
+    extraNode = (
+      <div className={styles.hasChildren}>
+        <RightOutlined />
+      </div>
+    );
+  } else if (onSelect) {
+    extraNode = (
+      <div
+        className={styles.hasChildren}
+        onClick={() => {
+          onEdit([...path, 0]);
+        }}
+      >
+        <PlusOutlined />
+      </div>
+    );
+  }
 
   return (
     <div
       className={classNames(styles.noteBlock, {
         [styles.active]: active,
       })}
-      onClick={onClick}
+      onClick={onSelect}
       onDoubleClick={() => {
-        onEdit(note);
+        onInternalEdit(path);
       }}
     >
       <div className={styles.content}>
-        <h3>{note.title}</h3>
-        <p>{note.description}</p>
+        <h3>{note.title ?? '无标题'}</h3>
+        <Typography>
+          <div dangerouslySetInnerHTML={{ __html: html }} />
+        </Typography>
       </div>
-      {!!note.children?.length && (
-        <div className={styles.hasChildren}>
-          <RightOutlined />
-        </div>
-      )}
+      {extraNode}
     </div>
   );
 }
 
+// =============================================================================
+// =                                  数据列表                                  =
+// =============================================================================
 interface NoteBlockListProps {
+  path: number[];
   notes: Note[];
   activeIndex: number;
   onSelect: (index: number) => void;
 }
 
-function NoteBlockList({ notes, activeIndex, onSelect }: NoteBlockListProps) {
+function NoteBlockList({
+  notes,
+  activeIndex,
+  path,
+  onSelect,
+}: NoteBlockListProps) {
+  const { editable } = React.useContext(LinkGraphContext);
+
   if (!notes.length) {
     return null;
   }
@@ -94,14 +145,23 @@ function NoteBlockList({ notes, activeIndex, onSelect }: NoteBlockListProps) {
     <div className={styles.noteBlockList} style={{ width: NOTE_WIDTH }}>
       {notes.map((note, index) => (
         <NoteBlock
+          path={[...path, index]}
           key={index}
           note={note}
           active={index === activeIndex}
-          onClick={() => {
+          onSelect={() => {
             onSelect(index);
           }}
         />
       ))}
+      {editable && (
+        <NoteBlock
+          path={[...path, notes.length]}
+          note={{
+            title: '新建',
+          }}
+        />
+      )}
     </div>
   );
 }
@@ -113,11 +173,14 @@ export interface LinkGraphProps {
 
 export default function LinkGraph({
   editable,
-  notes = testNodes,
+  notes = EMPTY_LIST,
 }: LinkGraphProps) {
-  const [editNote, setEditNote] = React.useState<Note | null>(null);
+  // const [editNote, setEditNote] = React.useState<Note | null>(null);
+  const [editNotePath, setEditNotePath] = React.useState<
+    (number | string)[] | null
+  >(null);
 
-  const descRef = React.useRef<any>(null);
+  const titleRef = React.useRef<any>(null);
 
   const [form] = Form.useForm();
 
@@ -132,13 +195,14 @@ export default function LinkGraph({
 
   // ============================ Note ============================
   const [internalNotes, setInternalNotes] = React.useState(notes);
+
   React.useEffect(() => {
     setInternalNotes(notes);
   }, [notes]);
 
   const notesList = React.useMemo(() => {
-    let currentList = notes;
-    const internalList: Note[][] = [notes];
+    let currentList = internalNotes?.length ? internalNotes : [{}];
+    const internalList: Note[][] = [currentList];
 
     for (let i = 0; i < path.length; i += 1) {
       currentList = currentList[path[i]]?.children || [];
@@ -146,40 +210,53 @@ export default function LinkGraph({
     }
 
     return internalList;
-  }, [path, notes]);
+  }, [path, internalNotes]);
 
   // ============================ Edit ============================
-  const onEdit = (note: Note) => {
-    setEditNote(note);
+  const onEdit = (path: number[]) => {
+    const connectPath: (string | number)[] = [];
+
+    path.forEach((noteIndex, index) => {
+      if (index !== 0) {
+        connectPath.push('children');
+      }
+      connectPath.push(noteIndex);
+    });
+
+    setEditNotePath(connectPath);
   };
 
   const onUpdate = () => {
+    const clone = JSON.parse(JSON.stringify(internalNotes));
+
     const values = form.getFieldsValue();
     Object.keys(values).forEach((key) => {
       const value = values[key];
-      (editNote as any)[key] = value;
+      set(clone, [...editNotePath!, key], value);
     });
 
-    setEditNote(null);
-    setInternalNotes((notes) => [...notes]);
+    setEditNotePath(null);
+    setInternalNotes(clone);
   };
 
   React.useEffect(() => {
-    if (editNote) {
-      form.setFieldsValue(editNote);
+    if (editNotePath) {
+      form.resetFields();
+      form.setFieldsValue(get(internalNotes, editNotePath));
 
       setTimeout(() => {
-        descRef.current?.focus();
+        titleRef.current?.focus();
       }, 50);
     }
-  }, [!!editNote]);
+  }, [!!editNotePath]);
 
   // =========================== Render ===========================
   return (
     <LinkGraphContext.Provider value={{ editable, onEdit }}>
-      <div style={{ display: 'flex', alignItems: 'start' }}>
+      <div style={{ display: 'flex', alignItems: 'start', columnGap: 8 }}>
         {notesList.map((noteList, noteIndex) => (
           <NoteBlockList
+            path={path.slice(0, noteIndex)}
             key={noteIndex}
             notes={noteList}
             activeIndex={path[noteIndex]}
@@ -192,18 +269,18 @@ export default function LinkGraph({
 
       {/* 编辑框 */}
       <Modal
-        visible={!!editNote}
+        visible={!!editNotePath}
         onCancel={() => {
-          setEditNote(null);
+          setEditNotePath(null);
         }}
         onOk={onUpdate}
       >
         <Form form={form} layout="vertical" autoComplete="off">
           <Form.Item name="title" label="标题">
-            <Input />
+            <Input ref={titleRef} />
           </Form.Item>
           <Form.Item name="description" label="描述">
-            <Input.TextArea autoSize={{ minRows: 6 }} ref={descRef} />
+            <Input.TextArea autoSize={{ minRows: 6 }} />
           </Form.Item>
         </Form>
       </Modal>

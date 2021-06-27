@@ -7,7 +7,7 @@ import {
   FolderOpenOutlined,
   SettingOutlined,
   FileTextOutlined,
-  BarChartOutlined,
+  RadarChartOutlined,
 } from '@ant-design/icons';
 import { useLocation, Link } from 'umi';
 import { Layout, Menu } from 'antd';
@@ -88,10 +88,10 @@ export default ({ children }: LayoutProps) => {
         </Link>
       </Menu.Item>
 
-      <Menu.Item key="/graph" title="可视">
+      <Menu.Item key="/graph" title="纪要">
         <Link to="/graph">
-          <BarChartOutlined />
-          <span className="nav-text">可视</span>
+          <RadarChartOutlined />
+          <span className="nav-text">纪要</span>
         </Link>
       </Menu.Item>
     </Menu>
