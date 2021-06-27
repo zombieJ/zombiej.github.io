@@ -11,11 +11,14 @@ export default (props: { match: { params: { id: string } } }) => {
   } = props;
   const { data } = useSWR<{ content: Note[] }>(`/data/graphs/${id}.json`);
 
-  console.log('~~~>', data);
-
   if (!data) {
     return <FullSpin />;
   }
 
-  return <LinkGraph notes={data?.content} />;
+  return (
+    <LinkGraph
+      editable={process.env.NODE_ENV !== 'production'}
+      notes={data?.content}
+    />
+  );
 };

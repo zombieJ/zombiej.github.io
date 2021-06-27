@@ -1,7 +1,7 @@
 import React from 'react';
 import marked from 'marked';
 import { RightOutlined, DeleteOutlined } from '@ant-design/icons';
-import { Modal, Form, Input, Typography, Button } from 'antd';
+import { Modal, Form, Input, Typography, Button, Switch, Space } from 'antd';
 import classNames from 'classnames';
 import { get, set } from 'lodash';
 import styles from './LinkGraph.less';
@@ -214,6 +214,9 @@ export default function LinkGraph({
   notes = EMPTY_LIST,
   onSave,
 }: LinkGraphProps) {
+  const [readOnly, setReadOnly] = React.useState(false);
+  const mergedEditable = editable && !readOnly;
+
   const [editNotePath, setEditNotePath] = React.useState<
     (number | string)[] | null
   >(null);
@@ -318,17 +321,30 @@ export default function LinkGraph({
 
   // =========================== Render ===========================
   return (
-    <LinkGraphContext.Provider value={{ editable, onEdit, onRemove }}>
+    <LinkGraphContext.Provider
+      value={{ editable: mergedEditable, onEdit, onRemove }}
+    >
       {editable && (
         <div style={{ position: 'sticky', top: 0, marginBottom: 24 }}>
-          <Button
-            type="primary"
-            onClick={() => {
-              onSave?.(internalNotes);
-            }}
-          >
-            保存
-          </Button>
+          <Space size="large">
+            <Button
+              type="primary"
+              onClick={() => {
+                onSave?.(internalNotes);
+              }}
+            >
+              保存
+            </Button>
+
+            <Switch
+              checkedChildren="可编辑"
+              unCheckedChildren="可编辑"
+              checked={!readOnly}
+              onChange={() => {
+                setReadOnly(!readOnly);
+              }}
+            />
+          </Space>
         </div>
       )}
 
@@ -357,7 +373,7 @@ export default function LinkGraph({
 
       {/* 编辑框 */}
       <Modal
-        visible={!!editNotePath}
+        visible={!!editNotePath && !readOnly}
         onCancel={() => {
           setEditNotePath(null);
         }}
