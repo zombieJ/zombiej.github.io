@@ -101,26 +101,29 @@ function NoteBlock({ create, note, active, path, onSelect }: NoteBlockProps) {
     onEdit(editPath);
   };
 
-  // >>> Render
-  let extraNode: React.ReactNode;
+  // ======================== Render ========================
+  // >>> has children
+  let extraChildrenNode: React.ReactNode;
   if (note.children?.length) {
-    extraNode = (
-      <div className={styles.hasChildren}>
+    extraChildrenNode = (
+      <div className={styles.extra}>
         <RightOutlined />
       </div>
     );
-  } else if (onSelect) {
-    extraNode = (
-      <div
-        className={styles.hasChildren}
-        onClick={() => {
-          onRemove(path);
-        }}
-      >
-        <DeleteOutlined />
-      </div>
-    );
   }
+
+  // >>> remove
+  const extraRemoveNode = onSelect && editable && (
+    <div
+      className={classNames(styles.extra, styles.hover)}
+      onClick={(e) => {
+        e.stopPropagation();
+        onRemove(path);
+      }}
+    >
+      <DeleteOutlined />
+    </div>
+  );
 
   return (
     <div
@@ -133,14 +136,18 @@ function NoteBlock({ create, note, active, path, onSelect }: NoteBlockProps) {
         onInternalEdit(path);
       }}
     >
-      <div className={styles.content}>
+      <div className={styles.holder}>
         {!note.title && !html && '无标题'}
         <h3>{note.title}</h3>
-        <Typography>
-          <div dangerouslySetInnerHTML={{ __html: html }} />
+        <Typography className={styles.content}>
+          <div
+            className={styles.dangerHolder}
+            dangerouslySetInnerHTML={{ __html: html }}
+          />
         </Typography>
       </div>
-      {extraNode}
+      {extraRemoveNode}
+      {extraChildrenNode}
     </div>
   );
 }
@@ -216,7 +223,12 @@ export default function LinkGraph({
   const onUpdatePath = (pathIndex: number, index: number) => {
     const newPath = path.slice(0, pathIndex);
     newPath[pathIndex] = index;
-    setPath(newPath);
+
+    if (newPath.join('_') === path.join('_')) {
+      setPath([]);
+    } else {
+      setPath(newPath);
+    }
   };
 
   // ============================ Note ============================
@@ -268,6 +280,18 @@ export default function LinkGraph({
     });
   };
 
+  React.useEffect(() => {
+    if (editNotePath) {
+      form.resetFields();
+      form.setFieldsValue(get(internalNotes, editNotePath));
+
+      setTimeout(() => {
+        titleRef.current?.focus();
+      }, 50);
+    }
+  }, [!!editNotePath]);
+
+  // =========================== Submit ===========================
   const onUpdate = () => {
     const clone = JSON.parse(JSON.stringify(internalNotes));
 
@@ -281,16 +305,11 @@ export default function LinkGraph({
     setInternalNotes(clone);
   };
 
-  React.useEffect(() => {
-    if (editNotePath) {
-      form.resetFields();
-      form.setFieldsValue(get(internalNotes, editNotePath));
-
-      setTimeout(() => {
-        titleRef.current?.focus();
-      }, 50);
+  const onSubmitKey: React.KeyboardEventHandler = (e) => {
+    if (e.which === 13 && (e.metaKey || e.ctrlKey)) {
+      onUpdate();
     }
-  }, [!!editNotePath]);
+  };
 
   // =========================== Render ===========================
   return (
@@ -317,7 +336,12 @@ export default function LinkGraph({
         }}
         onOk={onUpdate}
       >
-        <Form form={form} layout="vertical" autoComplete="off">
+        <Form
+          form={form}
+          layout="vertical"
+          autoComplete="off"
+          onKeyDown={onSubmitKey}
+        >
           <Form.Item name="title" label="标题">
             <Input ref={titleRef} />
           </Form.Item>

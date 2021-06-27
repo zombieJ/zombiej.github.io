@@ -21,20 +21,37 @@
 
   &.active {
     background-color: @blue-4;
-    color: #FFF;
+    color: #fff;
   }
 
   &.create {
     text-align: center;
   }
 
-  .content {
+  .extra {
+    padding: 0 4px;
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+
+    &.hover:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+  }
+
+  .holder {
     flex: auto;
 
     h3,
-    p {
+    .content {
       margin: 0;
       color: inherit;
+
+      .dangerHolder {
+        *:last-child {
+          margin-bottom: 0;
+        }
+      }
     }
   }
 }
