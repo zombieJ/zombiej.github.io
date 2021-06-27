@@ -3,9 +3,13 @@ import { Card, List, Button } from 'antd';
 import { DotChartOutlined } from '@ant-design/icons';
 import useSWR from 'swr';
 import { Link } from 'umi';
-import LinkGraph from './components/LinkGraph';
+import moment from 'moment';
+import RootContext from '@/context';
+import FullSpin from '@/components/FullSpin';
 
 export default function Graph() {
+  const { dateFormat } = React.useContext(RootContext);
+
   const { data: list, isValidating } = useSWR<{
     graphs: {
       title: string;
@@ -15,6 +19,10 @@ export default function Graph() {
       createTime: number;
     }[];
   }>('/data/list.json');
+
+  if (!list) {
+    return <FullSpin />;
+  }
 
   return (
     <Card
@@ -35,9 +43,14 @@ export default function Graph() {
         pagination={{ pageSize: 20 }}
         dataSource={list?.graphs || []}
         renderItem={({ createTime, title, introduction, tags, hide }) => (
-          <List.Item key={createTime}>
-            <List.Item.Meta title={title} description={introduction} />
-          </List.Item>
+          <Link to={`/graph/${createTime}`}>
+            <List.Item key={createTime}>
+              <List.Item.Meta
+                title={title || moment(createTime).format(dateFormat)}
+                description={introduction}
+              />
+            </List.Item>
+          </Link>
         )}
       />
     </Card>
