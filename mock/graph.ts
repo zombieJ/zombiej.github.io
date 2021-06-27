@@ -14,6 +14,8 @@ async function saveGraph(createTime: number, reqBody: Request['body']) {
     createTime,
   };
 
+  await fse.ensureDir(`./data/graphs`);
+
   return fse
     .writeFile(
       `./data/graphs/${createTime}.json`,
@@ -25,7 +27,7 @@ async function saveGraph(createTime: number, reqBody: Request['body']) {
 
 export default {
   'get /data/graphs/refresh': function (_: Request, res: Response) {
-    refreshList()
+    refreshList('graphs')
       .then(() => {
         res.json({ success: true });
       })
@@ -48,7 +50,7 @@ export default {
       .then((article) => {
         console.log('Save article:', article);
         res.json({ success: true, article });
-        refreshList();
+        refreshList('graphs');
       })
       .catch((err) => {
         console.log(err);
@@ -63,7 +65,7 @@ export default {
       .then((article) => {
         console.log('Update article:', article);
         res.json({ success: true, article });
-        refreshList();
+        refreshList('graphs');
       })
       .catch((err) => {
         console.log(err);
@@ -79,7 +81,7 @@ export default {
     fse
       .unlink(`./data/graphs/${id}.json`)
       .then(() => {
-        return refreshList().then(() => {
+        return refreshList('graphs').then(() => {
           res.json({ success: true });
         });
       })

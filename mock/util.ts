@@ -8,32 +8,42 @@ const MAX_LENGTH = 150;
 const { window } = new JSDOM('<html></html>');
 var $ = jquery(window) as any;
 
-export function refreshList() {
-  // 本地运行，直接 Sync 了
-  const fileList = fse.readdirSync('./data/articles');
-  const wrapper = {
-    articles: fileList
-      .map((fileName) => {
-        const { title, tags, content, createTime, thumbnail, hide } =
-          fse.readJsonSync(`./data/articles/${fileName}`);
+export function refreshList(type: 'articles' | 'graphs' = 'articles') {
+  const originContent = fse.readJsonSync('./data/list.json');
 
+  // 本地运行，直接 Sync 了
+  const fileList = fse.readdirSync(`./data/${type}`);
+
+  const data = fileList
+    .map((fileName) => {
+      const { title, tags, content, createTime, thumbnail, hide } =
+        fse.readJsonSync(`./data/${type}/${fileName}`);
+
+      let introduction: string | undefined = undefined;
+
+      if (type === 'articles') {
         const html = marked(content);
         const $div = $('<div>').html(html);
 
         const text = $div.text().trim();
-        const introduction =
+        introduction =
           text.slice(0, MAX_LENGTH) + (text.length > MAX_LENGTH ? '……' : '');
+      }
 
-        return {
-          title,
-          hide,
-          introduction,
-          tags,
-          thumbnail,
-          createTime,
-        };
-      })
-      .sort((a, b) => b.createTime - a.createTime),
+      return {
+        title,
+        hide,
+        introduction,
+        tags,
+        thumbnail,
+        createTime,
+      };
+    })
+    .sort((a, b) => b.createTime - a.createTime);
+
+  const wrapper = {
+    ...originContent,
+    [`${type}`]: data,
   };
 
   return fse

@@ -212,6 +212,7 @@ export interface LinkGraphProps {
 export default function LinkGraph({
   editable,
   notes = EMPTY_LIST,
+  onSave,
 }: LinkGraphProps) {
   const [editNotePath, setEditNotePath] = React.useState<
     (number | string)[] | null
@@ -320,7 +321,14 @@ export default function LinkGraph({
     <LinkGraphContext.Provider value={{ editable, onEdit, onRemove }}>
       {editable && (
         <div style={{ position: 'sticky', top: 0, marginBottom: 24 }}>
-          <Button type="primary">保存</Button>
+          <Button
+            type="primary"
+            onClick={() => {
+              onSave?.(internalNotes);
+            }}
+          >
+            保存
+          </Button>
         </div>
       )}
 
