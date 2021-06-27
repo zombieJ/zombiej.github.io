@@ -10,7 +10,7 @@ async function saveGraph(createTime: number, reqBody: Request['body']) {
     title,
     tags,
     hide,
-    content: content.trim(),
+    content,
     createTime,
   };
 

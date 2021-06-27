@@ -2,7 +2,8 @@
 @border: 1px solid @blue-4;
 
 .noteBlock {
-  border-bottom: @border;
+  border: @border;
+  border-radius: 2px;
   background: @blue-1;
   transition: all 0.3s;
   cursor: pointer;
@@ -11,9 +12,6 @@
   align-items: center;
   padding: 4px 8px;
 
-  &:last-child {
-    border-bottom: 0;
-  }
 
   &:hover {
     box-shadow: 0 0 5px @blue-3;
@@ -59,6 +57,5 @@
 .noteBlockList {
   display: inline-flex;
   flex-direction: column;
-  border: @border;
-  border-radius: 2px;
+  row-gap: 8px;
 }

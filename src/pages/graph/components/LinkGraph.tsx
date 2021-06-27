@@ -1,7 +1,7 @@
 import React from 'react';
 import marked from 'marked';
 import { RightOutlined, DeleteOutlined } from '@ant-design/icons';
-import { Modal, Form, Input, Typography } from 'antd';
+import { Modal, Form, Input, Typography, Button } from 'antd';
 import classNames from 'classnames';
 import { get, set } from 'lodash';
 import styles from './LinkGraph.less';
@@ -192,7 +192,7 @@ function NoteBlockList({
           create
           path={[...path, notes.length]}
           note={{
-            title: '新建',
+            description: '\\+ 新建',
           }}
         />
       )}
@@ -200,9 +200,13 @@ function NoteBlockList({
   );
 }
 
+// =============================================================================
+// =                                  图形本体                                  =
+// =============================================================================
 export interface LinkGraphProps {
   editable?: boolean;
   notes?: Note[];
+  onSave?: (notes: Note[]) => void;
 }
 
 export default function LinkGraph({
@@ -314,7 +318,22 @@ export default function LinkGraph({
   // =========================== Render ===========================
   return (
     <LinkGraphContext.Provider value={{ editable, onEdit, onRemove }}>
-      <div style={{ display: 'flex', alignItems: 'start', columnGap: 8 }}>
+      {editable && (
+        <div style={{ position: 'sticky', top: 0, marginBottom: 24 }}>
+          <Button type="primary">保存</Button>
+        </div>
+      )}
+
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'start',
+          columnGap: 8,
+          position: 'relative',
+        }}
+      >
+        {/* 操作栏 */}
+
         {notesList.map((noteList, noteIndex) => (
           <NoteBlockList
             path={path.slice(0, noteIndex)}

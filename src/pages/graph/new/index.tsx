@@ -1,6 +1,18 @@
 import React from 'react';
-import LinkGraph from '../components/LinkGraph';
+import LinkGraph, { Note } from '../components/LinkGraph';
 
 export default function New() {
-  return <LinkGraph editable />;
+  const onSave = async (notes: Note[]) => {
+    fetch('/data/graphs/new', {
+      method: 'POST',
+      body: JSON.stringify({
+        content: notes,
+      }),
+      headers: {
+        'content-type': 'application/json',
+      },
+    });
+  };
+
+  return <LinkGraph editable onSave={onSave} />;
 }
