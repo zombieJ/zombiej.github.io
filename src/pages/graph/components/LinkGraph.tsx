@@ -1,6 +1,6 @@
 import React from 'react';
 import marked from 'marked';
-import { RightOutlined, PlusOutlined } from '@ant-design/icons';
+import { RightOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Modal, Form, Input, Typography } from 'antd';
 import classNames from 'classnames';
 import { get, set } from 'lodash';
@@ -13,7 +13,21 @@ const EMPTY_LIST: Note[] = [];
 const LinkGraphContext = React.createContext<{
   editable?: boolean;
   onEdit: (path: number[]) => void;
+  onRemove: (path: number[]) => void;
 }>(null as any);
+
+function getConnectedPath(path: number[]) {
+  const connectPath: (string | number)[] = [];
+
+  path.forEach((noteIndex, index) => {
+    if (index !== 0) {
+      connectPath.push('children');
+    }
+    connectPath.push(noteIndex);
+  });
+
+  return connectPath;
+}
 
 export interface Note {
   title?: string;
@@ -55,20 +69,30 @@ const testNodes: Note[] = [
 // =                                   数据块                                   =
 // =============================================================================
 interface NoteBlockProps {
+  create?: boolean;
   note: Note;
   active?: boolean;
-  onSelect?: React.MouseEventHandler;
+  onSelect?: () => void;
   path: number[];
 }
 
-function NoteBlock({ note, active, path, onSelect }: NoteBlockProps) {
-  const { editable, onEdit } = React.useContext(LinkGraphContext);
+function NoteBlock({ create, note, active, path, onSelect }: NoteBlockProps) {
+  const { editable, onEdit, onRemove } = React.useContext(LinkGraphContext);
 
   // >>> Content
   const html = React.useMemo(
     () => marked(note.description || ''),
     [note.description],
   );
+
+  // >>> Select
+  const onInternalSelect = () => {
+    if (onSelect) {
+      onSelect();
+    } else if (create) {
+      onInternalEdit(path);
+    }
+  };
 
   // >>> Edit
   const onInternalEdit = (editPath: number[]) => {
@@ -90,10 +114,10 @@ function NoteBlock({ note, active, path, onSelect }: NoteBlockProps) {
       <div
         className={styles.hasChildren}
         onClick={() => {
-          onEdit([...path, 0]);
+          onRemove(path);
         }}
       >
-        <PlusOutlined />
+        <DeleteOutlined />
       </div>
     );
   }
@@ -102,14 +126,16 @@ function NoteBlock({ note, active, path, onSelect }: NoteBlockProps) {
     <div
       className={classNames(styles.noteBlock, {
         [styles.active]: active,
+        [styles.create]: create,
       })}
-      onClick={onSelect}
+      onClick={onInternalSelect}
       onDoubleClick={() => {
         onInternalEdit(path);
       }}
     >
       <div className={styles.content}>
-        <h3>{note.title ?? '无标题'}</h3>
+        {!note.title && !html && '无标题'}
+        <h3>{note.title}</h3>
         <Typography>
           <div dangerouslySetInnerHTML={{ __html: html }} />
         </Typography>
@@ -137,7 +163,7 @@ function NoteBlockList({
 }: NoteBlockListProps) {
   const { editable } = React.useContext(LinkGraphContext);
 
-  if (!notes.length) {
+  if (!notes.length && !editable) {
     return null;
   }
 
@@ -156,6 +182,7 @@ function NoteBlockList({
       ))}
       {editable && (
         <NoteBlock
+          create
           path={[...path, notes.length]}
           note={{
             title: '新建',
@@ -175,7 +202,6 @@ export default function LinkGraph({
   editable,
   notes = EMPTY_LIST,
 }: LinkGraphProps) {
-  // const [editNote, setEditNote] = React.useState<Note | null>(null);
   const [editNotePath, setEditNotePath] = React.useState<
     (number | string)[] | null
   >(null);
@@ -201,7 +227,7 @@ export default function LinkGraph({
   }, [notes]);
 
   const notesList = React.useMemo(() => {
-    let currentList = internalNotes?.length ? internalNotes : [{}];
+    let currentList = internalNotes?.length ? internalNotes : [];
     const internalList: Note[][] = [currentList];
 
     for (let i = 0; i < path.length; i += 1) {
@@ -214,16 +240,32 @@ export default function LinkGraph({
 
   // ============================ Edit ============================
   const onEdit = (path: number[]) => {
-    const connectPath: (string | number)[] = [];
+    setEditNotePath(getConnectedPath(path));
+  };
 
-    path.forEach((noteIndex, index) => {
-      if (index !== 0) {
-        connectPath.push('children');
-      }
-      connectPath.push(noteIndex);
+  const onRemove = (path: number[]) => {
+    const fullPath = getConnectedPath(path);
+    const note = get(internalNotes, fullPath);
+
+    Modal.confirm({
+      title: '确认',
+      content: `确认删除 ${note.title || '该内容'} 吗？`,
+      onOk: () => {
+        let clone: Note[] = JSON.parse(JSON.stringify(internalNotes));
+        set(clone, fullPath, null);
+
+        const parentPath = getConnectedPath(path.slice(0, -1));
+        const note: Note = get(clone, parentPath);
+        if (note) {
+          note.children = note.children?.filter((n) => n);
+        } else {
+          clone = clone.filter((n) => n);
+        }
+
+        setInternalNotes(clone);
+        setPath(path.slice(0, -1));
+      },
     });
-
-    setEditNotePath(connectPath);
   };
 
   const onUpdate = () => {
@@ -252,7 +294,7 @@ export default function LinkGraph({
 
   // =========================== Render ===========================
   return (
-    <LinkGraphContext.Provider value={{ editable, onEdit }}>
+    <LinkGraphContext.Provider value={{ editable, onEdit, onRemove }}>
       <div style={{ display: 'flex', alignItems: 'start', columnGap: 8 }}>
         {notesList.map((noteList, noteIndex) => (
           <NoteBlockList
