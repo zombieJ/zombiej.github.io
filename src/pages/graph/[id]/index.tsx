@@ -1,7 +1,9 @@
 import React from 'react';
+import { Modal } from 'antd';
 import useSWR, { mutate } from 'swr';
+import { history } from 'umi';
 import FullSpin from '@/components/FullSpin';
-import LinkGraph, { Note } from '../components/LinkGraph';
+import LinkGraph, { LinkGraphInfo, Note } from '../components/LinkGraph';
 
 export default (props: { match: { params: { id: string } } }) => {
   const {
@@ -13,6 +15,7 @@ export default (props: { match: { params: { id: string } } }) => {
   const url = `/data/graphs/${id}.json`;
 
   const { data, isValidating } = useSWR<{
+    title: string;
     content: Note[];
     createTime: number;
   }>(url);
@@ -21,12 +24,12 @@ export default (props: { match: { params: { id: string } } }) => {
     return <FullSpin />;
   }
 
-  const onSave = async (notes: Note[]) => {
+  const onSave = async (info: LinkGraphInfo) => {
     fetch('/data/graphs/edit', {
       method: 'POST',
       body: JSON.stringify({
+        ...info,
         createTime: data.createTime,
-        content: notes,
       }),
       headers: {
         'content-type': 'application/json',
@@ -36,12 +39,28 @@ export default (props: { match: { params: { id: string } } }) => {
     });
   };
 
+  const onDelete = () => {
+    Modal.confirm({
+      title: '确认',
+      content: '确定删除吗？',
+      onOk: () => {
+        fetch(`/data/graphs/delete/${data.createTime}`, {
+          method: 'DELETE',
+        }).then(() => {
+          history.push('/graph');
+        });
+      },
+    });
+  };
+
   return (
     <LinkGraph
       editable={process.env.NODE_ENV !== 'production'}
       notes={data?.content}
+      title={data.title}
       createTime={data.createTime}
       onSave={onSave}
+      onDelete={onDelete}
       refreshing={isValidating}
     />
   );

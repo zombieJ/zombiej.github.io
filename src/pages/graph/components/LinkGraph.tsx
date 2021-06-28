@@ -205,19 +205,28 @@ function NoteBlockList({
 // =============================================================================
 // =                                  图形本体                                  =
 // =============================================================================
+export interface LinkGraphInfo {
+  title: string;
+  content: Note[];
+}
+
 export interface LinkGraphProps {
   editable?: boolean;
   createTime?: number;
   notes?: Note[];
-  onSave?: (notes: Note[]) => void;
+  onSave?: (info: LinkGraphInfo) => void;
+  onDelete?: () => void;
   refreshing?: boolean;
+  title?: string;
 }
 
 export default function LinkGraph({
+  title,
   editable,
   createTime,
   notes = EMPTY_LIST,
   onSave,
+  onDelete,
   refreshing,
 }: LinkGraphProps) {
   const { dateFormat } = React.useContext(RootContext);
@@ -231,6 +240,7 @@ export default function LinkGraph({
   const titleRef = React.useRef<any>(null);
 
   const [form] = Form.useForm();
+  const [rootForm] = Form.useForm();
 
   // ============================ Path ============================
   const [path, setPath] = React.useState<number[]>([]);
@@ -331,35 +341,70 @@ export default function LinkGraph({
     <LinkGraphContext.Provider
       value={{ editable: mergedEditable, onEdit, onRemove }}
     >
-      {editable && (
-        <div
-          style={{ position: 'sticky', top: 0, marginBottom: 24, height: 32 }}
+      <div style={{ position: 'sticky', top: 0, marginBottom: 24, height: 32 }}>
+        <Form
+          form={rootForm}
+          component={false}
+          layout="inline"
+          autoComplete="off"
         >
           <Space size="large">
+            {editable ? (
+              <Form.Item
+                initialValue={title}
+                label="标题"
+                name="title"
+                style={{ margin: 0 }}
+              >
+                <Input />
+              </Form.Item>
+            ) : (
+              title
+            )}
+
             {createTime && moment(createTime).format(dateFormat)}
 
-            <Switch
-              checkedChildren="可编辑"
-              unCheckedChildren="可编辑"
-              checked={!readOnly}
-              onChange={() => {
-                setReadOnly(!readOnly);
-              }}
-            />
+            {editable && (
+              <Switch
+                checkedChildren="可编辑"
+                unCheckedChildren="可编辑"
+                checked={!readOnly}
+                onChange={() => {
+                  setReadOnly(!readOnly);
+                }}
+              />
+            )}
 
-            <Button
-              type="primary"
-              onClick={() => {
-                onSave?.(internalNotes);
-              }}
-            >
-              保存
-            </Button>
+            {editable && (
+              <Button
+                type="primary"
+                onClick={() => {
+                  onSave?.({
+                    ...rootForm.getFieldsValue(),
+                    content: internalNotes,
+                  });
+                }}
+              >
+                保存
+              </Button>
+            )}
+
+            {editable && onDelete && (
+              <Button
+                type="primary"
+                danger
+                onClick={() => {
+                  onDelete();
+                }}
+              >
+                删除
+              </Button>
+            )}
 
             {refreshing && <SyncOutlined spin />}
           </Space>
-        </div>
-      )}
+        </Form>
+      </div>
 
       <div style={{ height: '100vh', position: 'sticky', top: 56 }}>
         <div

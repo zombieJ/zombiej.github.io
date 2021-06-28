@@ -1,13 +1,11 @@
 import React from 'react';
-import LinkGraph, { Note } from '../components/LinkGraph';
+import LinkGraph, { LinkGraphInfo } from '../components/LinkGraph';
 
 export default function New() {
-  const onSave = async (notes: Note[]) => {
+  const onSave = async (info: LinkGraphInfo) => {
     fetch('/data/graphs/new', {
       method: 'POST',
-      body: JSON.stringify({
-        content: notes,
-      }),
+      body: JSON.stringify(info),
       headers: {
         'content-type': 'application/json',
       },
