@@ -416,6 +416,7 @@ export default function LinkGraph({
                 <Button
                   type="primary"
                   danger
+                  style={{ position: 'absolute', right: 16 }}
                   onClick={() => {
                     onDelete();
                   }}
