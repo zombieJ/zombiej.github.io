@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal } from 'antd';
+import { Modal, message } from 'antd';
 import useSWR, { mutate } from 'swr';
 import { history } from 'umi';
 import FullSpin from '@/components/FullSpin';
@@ -35,6 +35,7 @@ export default (props: { match: { params: { id: string } } }) => {
         'content-type': 'application/json',
       },
     }).then(() => {
+      message.success('保存成功！');
       mutate(url);
     });
   };

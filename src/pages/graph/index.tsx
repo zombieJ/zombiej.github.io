@@ -6,6 +6,7 @@ import { Link } from 'umi';
 import moment from 'moment';
 import RootContext from '@/context';
 import FullSpin from '@/components/FullSpin';
+import styles from './index.less';
 
 export default function Graph() {
   const { dateFormat } = React.useContext(RootContext);
@@ -48,14 +49,14 @@ export default function Graph() {
         pagination={{ pageSize: 20 }}
         dataSource={list?.graphs || []}
         renderItem={({ createTime, title, introduction, tags, hide }) => (
-          <Link to={`/graph/${createTime}`}>
-            <List.Item key={createTime}>
+          <List.Item key={createTime}>
+            <Link to={`/graph/${createTime}`} className={styles.link}>
               <List.Item.Meta
                 title={title || moment(createTime).format(dateFormat)}
                 description={introduction}
               />
-            </List.Item>
-          </Link>
+            </Link>
+          </List.Item>
         )}
       />
     </Card>

@@ -45,9 +45,9 @@ export default {
     const createTime = Date.now();
 
     saveGraph(createTime, req.body)
-      .then((article) => {
-        console.log('Save graph:', article);
-        res.json({ success: true, article });
+      .then((graph) => {
+        console.log('Save graph:', graph);
+        res.json({ success: true, graph });
         refreshList('graphs');
       })
       .catch((err) => {

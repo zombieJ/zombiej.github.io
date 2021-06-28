@@ -356,7 +356,7 @@ export default function LinkGraph({
                 name="title"
                 style={{ margin: 0 }}
               >
-                <Input />
+                <Input autoComplete="off" />
               </Form.Item>
             ) : (
               title
