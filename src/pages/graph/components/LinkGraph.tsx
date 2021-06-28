@@ -158,6 +158,7 @@ function NoteBlock({ create, note, active, path, onSelect }: NoteBlockProps) {
 // =                                  数据列表                                  =
 // =============================================================================
 interface NoteBlockListProps {
+  style?: React.CSSProperties;
   path: number[];
   notes: Note[];
   activeIndex: number;
@@ -165,6 +166,7 @@ interface NoteBlockListProps {
 }
 
 function NoteBlockList({
+  style,
   notes,
   activeIndex,
   path,
@@ -177,7 +179,10 @@ function NoteBlockList({
   }
 
   return (
-    <div className={styles.noteBlockList} style={{ width: NOTE_WIDTH }}>
+    <div
+      className={styles.noteBlockList}
+      style={{ width: NOTE_WIDTH, ...style }}
+    >
       {notes.map((note, index) => (
         <NoteBlock
           path={[...path, index]}
@@ -422,8 +427,7 @@ export default function LinkGraph({
           style={{
             flex: 'auto',
             minHeight: 0,
-            overflowY: 'auto',
-            marginBottom: 16,
+            position: 'relative',
           }}
         >
           <div
@@ -432,11 +436,16 @@ export default function LinkGraph({
               alignItems: 'start',
               columnGap: 8,
               position: 'relative',
+              height: '100%',
             }}
           >
             {/* 操作栏 */}
             {notesList.map((noteList, noteIndex) => (
               <NoteBlockList
+                style={{
+                  flex:
+                    noteIndex === notesList.length - 1 ? 'none' : '0 1 auto',
+                }}
                 path={path.slice(0, noteIndex)}
                 key={noteIndex}
                 notes={noteList}
