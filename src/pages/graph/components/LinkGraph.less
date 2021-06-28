@@ -19,6 +19,29 @@
   &.active {
     background-color: @blue-4;
     color: #fff;
+
+    .holder {
+      .content {
+        :global {
+          .strong-mark {
+            background: @red-5;
+            color: #FFF;
+            // text-shadow: -1px -1px 0 #fff, 1px 1px 0 #fff;
+            // position: relative;
+
+            // &::after {
+            //   content: '';
+            //   left: 0;
+            //   right: 0;
+            //   top: 0;
+            //   bottom: 0;
+            //   position: absolute;
+            //   border: 1px solid @red-5;
+            // }
+          }
+        }
+      }
+    }
   }
 
   &.create {
@@ -47,6 +70,18 @@
       .dangerHolder {
         *:last-child {
           margin-bottom: 0;
+        }
+      }
+    }
+
+    .content {
+      :global {
+        .strong-mark {
+          transition: all .3s;
+          display: inline-block;
+          padding: 0 4px;
+          margin: 0 4px;
+          color: @red-5;
         }
       }
     }

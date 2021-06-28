@@ -1,5 +1,4 @@
 import React from 'react';
-import marked from 'marked';
 import { RightOutlined, DeleteOutlined, SyncOutlined } from '@ant-design/icons';
 import { Modal, Form, Input, Typography, Button, Switch, Space } from 'antd';
 import classNames from 'classnames';
@@ -7,8 +6,10 @@ import moment from 'moment';
 import RootContext from '@/context';
 import { get, set } from 'lodash';
 import styles from './LinkGraph.less';
+import { parseMarkdown } from './util';
 
-const NOTE_WIDTH = 200;
+const NOTE_MIN_WIDTH = 200;
+const NOTE_MAX_WIDTH = 300;
 
 const EMPTY_LIST: Note[] = [];
 
@@ -83,14 +84,17 @@ function NoteBlock({ create, note, active, path, onSelect }: NoteBlockProps) {
 
   // >>> Content
   const html = React.useMemo(
-    () => marked(note.description || ''),
+    () => parseMarkdown(note.description),
     [note.description],
   );
 
   // >>> Select
+  const selectRef = React.useRef<NodeJS.Timeout>();
+
   const onInternalSelect = () => {
     if (onSelect) {
-      onSelect();
+      clearTimeout(selectRef.current!);
+      selectRef.current = setTimeout(onSelect, !active ? 0 : 200);
     } else if (create) {
       onInternalEdit(path);
     }
@@ -135,6 +139,7 @@ function NoteBlock({ create, note, active, path, onSelect }: NoteBlockProps) {
       })}
       onClick={onInternalSelect}
       onDoubleClick={() => {
+        clearTimeout(selectRef.current!);
         onInternalEdit(path);
       }}
     >
@@ -181,7 +186,7 @@ function NoteBlockList({
   return (
     <div
       className={styles.noteBlockList}
-      style={{ width: NOTE_WIDTH, ...style }}
+      style={{ minWidth: NOTE_MIN_WIDTH, maxWidth: NOTE_MAX_WIDTH, ...style }}
     >
       {notes.map((note, index) => (
         <NoteBlock
@@ -251,11 +256,12 @@ export default function LinkGraph({
   const [path, setPath] = React.useState<number[]>([]);
 
   const onUpdatePath = (pathIndex: number, index: number) => {
-    const newPath = path.slice(0, pathIndex);
+    const parentPath = path.slice(0, pathIndex);
+    const newPath = [...parentPath];
     newPath[pathIndex] = index;
 
     if (newPath.join('_') === path.join('_')) {
-      setPath([]);
+      setPath(parentPath);
     } else {
       setPath(newPath);
     }
