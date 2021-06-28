@@ -58,7 +58,6 @@ export default ({ children }: LayoutProps) => {
   }
 
   // >>>>> Menu
-  console.log('!!', pathname);
   const $menu = (
     <Menu
       theme="dark"
@@ -122,6 +121,7 @@ export default ({ children }: LayoutProps) => {
               padding: '24px 16px 0',
               overflow: 'initial',
               minHeight: '100vh',
+              position: 'relative',
             }}
           >
             {children}

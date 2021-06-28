@@ -338,121 +338,140 @@ export default function LinkGraph({
 
   // =========================== Render ===========================
   return (
-    <LinkGraphContext.Provider
-      value={{ editable: mergedEditable, onEdit, onRemove }}
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        position: 'absolute',
+        left: 16,
+        right: 0,
+        top: 0,
+        bottom: 0,
+        paddingTop: 16,
+      }}
     >
-      <div style={{ position: 'sticky', top: 0, marginBottom: 24, height: 32 }}>
-        <Form
-          form={rootForm}
-          component={false}
-          layout="inline"
-          autoComplete="off"
-        >
-          <Space size="large">
-            {editable ? (
-              <Form.Item
-                initialValue={title}
-                label="标题"
-                name="title"
-                style={{ margin: 0 }}
-              >
-                <Input autoComplete="off" />
-              </Form.Item>
-            ) : (
-              title
-            )}
+      <LinkGraphContext.Provider
+        value={{ editable: mergedEditable, onEdit, onRemove }}
+      >
+        <div style={{ marginBottom: 16, height: 32, flex: 'none' }}>
+          <Form
+            form={rootForm}
+            component={false}
+            layout="inline"
+            autoComplete="off"
+          >
+            <Space size="large">
+              {editable ? (
+                <Form.Item
+                  initialValue={title}
+                  label="标题"
+                  name="title"
+                  style={{ margin: 0 }}
+                >
+                  <Input autoComplete="off" />
+                </Form.Item>
+              ) : (
+                title
+              )}
 
-            {createTime && moment(createTime).format(dateFormat)}
+              {createTime && moment(createTime).format(dateFormat)}
 
-            {editable && (
-              <Switch
-                checkedChildren="可编辑"
-                unCheckedChildren="可编辑"
-                checked={!readOnly}
-                onChange={() => {
-                  setReadOnly(!readOnly);
-                }}
-              />
-            )}
+              {editable && (
+                <Switch
+                  checkedChildren="可编辑"
+                  unCheckedChildren="可编辑"
+                  checked={!readOnly}
+                  onChange={() => {
+                    setReadOnly(!readOnly);
+                  }}
+                />
+              )}
 
-            {editable && (
-              <Button
-                type="primary"
-                onClick={() => {
-                  onSave?.({
-                    ...rootForm.getFieldsValue(),
-                    content: internalNotes,
-                  });
-                }}
-              >
-                保存
-              </Button>
-            )}
+              {editable && (
+                <Button
+                  type="primary"
+                  onClick={() => {
+                    onSave?.({
+                      ...rootForm.getFieldsValue(),
+                      content: internalNotes,
+                    });
+                  }}
+                >
+                  保存
+                </Button>
+              )}
 
-            {editable && onDelete && (
-              <Button
-                type="primary"
-                danger
-                onClick={() => {
-                  onDelete();
-                }}
-              >
-                删除
-              </Button>
-            )}
+              {editable && onDelete && (
+                <Button
+                  type="primary"
+                  danger
+                  onClick={() => {
+                    onDelete();
+                  }}
+                >
+                  删除
+                </Button>
+              )}
 
-            {refreshing && <SyncOutlined spin />}
-          </Space>
-        </Form>
-      </div>
+              {refreshing && <SyncOutlined spin />}
+            </Space>
+          </Form>
+        </div>
 
-      <div style={{ height: '100vh', position: 'sticky', top: 56 }}>
         <div
           style={{
-            display: 'flex',
-            alignItems: 'start',
-            columnGap: 8,
-            position: 'relative',
+            flex: 'auto',
+            minHeight: 0,
+            overflowY: 'auto',
+            marginBottom: 16,
           }}
         >
-          {/* 操作栏 */}
-
-          {notesList.map((noteList, noteIndex) => (
-            <NoteBlockList
-              path={path.slice(0, noteIndex)}
-              key={noteIndex}
-              notes={noteList}
-              activeIndex={path[noteIndex]}
-              onSelect={(index) => {
-                onUpdatePath(noteIndex, index);
-              }}
-            />
-          ))}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'start',
+              columnGap: 8,
+              position: 'relative',
+            }}
+          >
+            {/* 操作栏 */}
+            {notesList.map((noteList, noteIndex) => (
+              <NoteBlockList
+                path={path.slice(0, noteIndex)}
+                key={noteIndex}
+                notes={noteList}
+                activeIndex={path[noteIndex]}
+                onSelect={(index) => {
+                  onUpdatePath(noteIndex, index);
+                }}
+              />
+            ))}
+          </div>
         </div>
-      </div>
 
-      {/* 编辑框 */}
-      <Modal
-        visible={!!editNotePath && !readOnly}
-        onCancel={() => {
-          setEditNotePath(null);
-        }}
-        onOk={onUpdate}
-      >
-        <Form
-          form={form}
-          layout="vertical"
-          autoComplete="off"
-          onKeyDown={onSubmitKey}
+        {/* 编辑框 */}
+        <Modal
+          visible={!!editNotePath && !readOnly}
+          onCancel={() => {
+            setEditNotePath(null);
+          }}
+          onOk={onUpdate}
         >
-          <Form.Item name="title" label="标题">
-            <Input ref={titleRef} />
-          </Form.Item>
-          <Form.Item name="description" label="描述">
-            <Input.TextArea autoSize={{ minRows: 6 }} />
-          </Form.Item>
-        </Form>
-      </Modal>
-    </LinkGraphContext.Provider>
+          <Form
+            form={form}
+            layout="vertical"
+            autoComplete="off"
+            onKeyDown={onSubmitKey}
+          >
+            <Form.Item name="title" label="标题">
+              <Input ref={titleRef} />
+            </Form.Item>
+            <Form.Item name="description" label="描述">
+              <Input.TextArea autoSize={{ minRows: 6 }} />
+            </Form.Item>
+          </Form>
+        </Modal>
+      </LinkGraphContext.Provider>
+    </div>
   );
 }
