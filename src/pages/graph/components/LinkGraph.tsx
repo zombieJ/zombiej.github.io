@@ -1,8 +1,10 @@
 import React from 'react';
 import marked from 'marked';
-import { RightOutlined, DeleteOutlined } from '@ant-design/icons';
+import { RightOutlined, DeleteOutlined, SyncOutlined } from '@ant-design/icons';
 import { Modal, Form, Input, Typography, Button, Switch, Space } from 'antd';
 import classNames from 'classnames';
+import moment from 'moment';
+import RootContext from '@/context';
 import { get, set } from 'lodash';
 import styles from './LinkGraph.less';
 
@@ -205,15 +207,20 @@ function NoteBlockList({
 // =============================================================================
 export interface LinkGraphProps {
   editable?: boolean;
+  createTime?: number;
   notes?: Note[];
   onSave?: (notes: Note[]) => void;
+  refreshing?: boolean;
 }
 
 export default function LinkGraph({
   editable,
+  createTime,
   notes = EMPTY_LIST,
   onSave,
+  refreshing,
 }: LinkGraphProps) {
+  const { dateFormat } = React.useContext(RootContext);
   const [readOnly, setReadOnly] = React.useState(false);
   const mergedEditable = editable && !readOnly;
 
@@ -325,16 +332,11 @@ export default function LinkGraph({
       value={{ editable: mergedEditable, onEdit, onRemove }}
     >
       {editable && (
-        <div style={{ position: 'sticky', top: 0, marginBottom: 24 }}>
+        <div
+          style={{ position: 'sticky', top: 0, marginBottom: 24, height: 32 }}
+        >
           <Space size="large">
-            <Button
-              type="primary"
-              onClick={() => {
-                onSave?.(internalNotes);
-              }}
-            >
-              保存
-            </Button>
+            {createTime && moment(createTime).format(dateFormat)}
 
             <Switch
               checkedChildren="可编辑"
@@ -344,31 +346,44 @@ export default function LinkGraph({
                 setReadOnly(!readOnly);
               }}
             />
+
+            <Button
+              type="primary"
+              onClick={() => {
+                onSave?.(internalNotes);
+              }}
+            >
+              保存
+            </Button>
+
+            {refreshing && <SyncOutlined spin />}
           </Space>
         </div>
       )}
 
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'start',
-          columnGap: 8,
-          position: 'relative',
-        }}
-      >
-        {/* 操作栏 */}
+      <div style={{ height: '100vh', position: 'sticky', top: 56 }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'start',
+            columnGap: 8,
+            position: 'relative',
+          }}
+        >
+          {/* 操作栏 */}
 
-        {notesList.map((noteList, noteIndex) => (
-          <NoteBlockList
-            path={path.slice(0, noteIndex)}
-            key={noteIndex}
-            notes={noteList}
-            activeIndex={path[noteIndex]}
-            onSelect={(index) => {
-              onUpdatePath(noteIndex, index);
-            }}
-          />
-        ))}
+          {notesList.map((noteList, noteIndex) => (
+            <NoteBlockList
+              path={path.slice(0, noteIndex)}
+              key={noteIndex}
+              notes={noteList}
+              activeIndex={path[noteIndex]}
+              onSelect={(index) => {
+                onUpdatePath(noteIndex, index);
+              }}
+            />
+          ))}
+        </div>
       </div>
 
       {/* 编辑框 */}

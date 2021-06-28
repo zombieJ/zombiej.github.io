@@ -1,7 +1,7 @@
 import React from 'react';
 import useSWR from 'swr';
-import { List, Card, Tag, Select, Space } from 'antd';
-import { SyncOutlined } from '@ant-design/icons';
+import { List, Card, Tag, Select, Space, Button } from 'antd';
+import { SyncOutlined, HighlightOutlined } from '@ant-design/icons';
 import { Link } from 'umi';
 import moment from 'moment';
 
@@ -24,6 +24,8 @@ export default () => {
   }>('/data/list.json');
 
   const articles = list?.articles || [];
+
+  const devMode = process.env.NODE_ENV !== 'production';
 
   // ======================== Tags ========================
   const tagList = React.useMemo(() => {
@@ -50,7 +52,7 @@ export default () => {
   const filteredList = React.useMemo(() => {
     let currentList = articles;
 
-    if (process.env.NODE_ENV !== 'development') {
+    if (!devMode) {
       currentList = currentList.filter((article) => !article.hide);
     }
 
@@ -68,13 +70,22 @@ export default () => {
 
   // ======================= Render =======================
   const $extra = (
-    <Select
-      size="small"
-      style={{ width: 130 }}
-      value={tag}
-      onChange={setTag}
-      options={tagList}
-    />
+    <Space>
+      <Select
+        size="small"
+        style={{ width: 130 }}
+        value={tag}
+        onChange={setTag}
+        options={tagList}
+      />
+      {devMode && (
+        <Link to="/blog/new">
+          <Button type="primary" size="small" icon={<HighlightOutlined />}>
+            创建日志
+          </Button>
+        </Link>
+      )}
+    </Space>
   );
 
   return (

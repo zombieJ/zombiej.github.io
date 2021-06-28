@@ -53,22 +53,17 @@ export default ({ children }: LayoutProps) => {
           <span className="nav-text">配置</span>
         </Link>
       </Menu.Item>,
-      <Menu.Item key="/blog/new" title="新建文章">
-        <Link to="/blog/new">
-          <FileTextOutlined />
-          <span className="nav-text">新建文章</span>
-        </Link>
-      </Menu.Item>,
       <Menu.Divider key="dvd" />,
     ];
   }
 
   // >>>>> Menu
+  console.log('!!', pathname);
   const $menu = (
     <Menu
       theme="dark"
       mode={mobile ? 'horizontal' : 'inline'}
-      selectedKeys={[pathname]}
+      selectedKeys={[pathname, pathname.replace(/\/[^\/]*$/, '')]}
       style={mobile ? { lineHeight: '64px' } : {}}
       disabledOverflow
     >

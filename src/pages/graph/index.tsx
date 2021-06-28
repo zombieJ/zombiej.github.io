@@ -1,6 +1,6 @@
 import React from 'react';
-import { Card, List, Button } from 'antd';
-import { DotChartOutlined } from '@ant-design/icons';
+import { Card, List, Button, Space } from 'antd';
+import { DotChartOutlined, SyncOutlined } from '@ant-design/icons';
 import useSWR from 'swr';
 import { Link } from 'umi';
 import moment from 'moment';
@@ -26,7 +26,12 @@ export default function Graph() {
 
   return (
     <Card
-      title="可视"
+      title={
+        <Space>
+          可视
+          {isValidating && <SyncOutlined spin />}
+        </Space>
+      }
       extra={
         process.env.NODE_ENV !== 'production' && (
           <Link to={`/graph/new`}>

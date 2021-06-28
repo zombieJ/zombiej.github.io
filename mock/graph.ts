@@ -38,9 +38,7 @@ export default {
   },
 
   'get /data/graphs/:file': function (req: Request, res: Response) {
-    setTimeout(() => {
-      res.sendFile(Path.resolve(`./data/graphs/${req.params.file}`));
-    }, 1000);
+    res.sendFile(Path.resolve(`./data/graphs/${req.params.file}`));
   },
 
   'post /data/graphs/new': function (req: Request, res: Response) {
@@ -48,7 +46,7 @@ export default {
 
     saveGraph(createTime, req.body)
       .then((article) => {
-        console.log('Save article:', article);
+        console.log('Save graph:', article);
         res.json({ success: true, article });
         refreshList('graphs');
       })
@@ -63,7 +61,7 @@ export default {
 
     saveGraph(createTime, req.body)
       .then((article) => {
-        console.log('Update article:', article);
+        console.log('Update graph:', article);
         res.json({ success: true, article });
         refreshList('graphs');
       })
@@ -76,7 +74,7 @@ export default {
   'delete /data/graphs/delete/:id': function (req: Request, res: Response) {
     const { id } = req.params;
 
-    console.log('Delete article:', id);
+    console.log('Delete graph:', id);
 
     fse
       .unlink(`./data/graphs/${id}.json`)
