@@ -7,6 +7,7 @@ import {
   FolderOpenOutlined,
   SettingOutlined,
   FileTextOutlined,
+  RadarChartOutlined,
 } from '@ant-design/icons';
 import { useLocation, Link } from 'umi';
 import { Layout, Menu } from 'antd';
@@ -52,12 +53,6 @@ export default ({ children }: LayoutProps) => {
           <span className="nav-text">配置</span>
         </Link>
       </Menu.Item>,
-      <Menu.Item key="/blog/new" title="新建文章">
-        <Link to="/blog/new">
-          <FileTextOutlined />
-          <span className="nav-text">新建文章</span>
-        </Link>
-      </Menu.Item>,
       <Menu.Divider key="dvd" />,
     ];
   }
@@ -67,7 +62,7 @@ export default ({ children }: LayoutProps) => {
     <Menu
       theme="dark"
       mode={mobile ? 'horizontal' : 'inline'}
-      selectedKeys={[pathname]}
+      selectedKeys={[pathname, pathname.replace(/\/[^\/]*$/, '')]}
       style={mobile ? { lineHeight: '64px' } : {}}
       disabledOverflow
     >
@@ -84,6 +79,13 @@ export default ({ children }: LayoutProps) => {
         <Link to="/memory">
           {pathname === '/memory' ? <SmileOutlined /> : <MehOutlined />}
           <span className="nav-text">回忆</span>
+        </Link>
+      </Menu.Item>
+
+      <Menu.Item key="/graph" title="纪要">
+        <Link to="/graph">
+          <RadarChartOutlined />
+          <span className="nav-text">纪要</span>
         </Link>
       </Menu.Item>
     </Menu>
@@ -119,6 +121,7 @@ export default ({ children }: LayoutProps) => {
               padding: '24px 16px 0',
               overflow: 'initial',
               minHeight: '100vh',
+              position: 'relative',
             }}
           >
             {children}

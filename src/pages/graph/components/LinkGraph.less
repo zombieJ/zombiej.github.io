@@ -1,0 +1,96 @@
+@import (reference) '~antd/dist/antd.less';
+@border: 1px solid @blue-4;
+
+.noteBlock {
+  border: @border;
+  border-radius: 2px;
+  background: @blue-1;
+  transition: all 0.3s;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 4px 8px;
+
+  &:hover {
+    box-shadow: 0 0 5px @blue-3;
+  }
+
+  &.active {
+    background-color: @blue-4;
+    color: #fff;
+
+    .holder {
+      .content {
+        :global {
+          .strong-mark {
+            background: @red-5;
+            color: #FFF;
+            // text-shadow: -1px -1px 0 #fff, 1px 1px 0 #fff;
+            // position: relative;
+
+            // &::after {
+            //   content: '';
+            //   left: 0;
+            //   right: 0;
+            //   top: 0;
+            //   bottom: 0;
+            //   position: absolute;
+            //   border: 1px solid @red-5;
+            // }
+          }
+        }
+      }
+    }
+  }
+
+  &.create {
+    text-align: center;
+  }
+
+  .extra {
+    padding: 0 4px;
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+
+    &.hover:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+  }
+
+  .holder {
+    flex: auto;
+
+    h3,
+    .content {
+      margin: 0;
+      color: inherit;
+
+      .dangerHolder {
+        *:last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
+
+    .content {
+      :global {
+        .strong-mark {
+          transition: all .3s;
+          padding-left: 4px;
+          padding-right: 4px;
+          color: @red-5;
+        }
+      }
+    }
+  }
+}
+
+.noteBlockList {
+  display: inline-flex;
+  flex-direction: column;
+  row-gap: 8px;
+  height: 100%;
+  overflow-y: auto;
+}
