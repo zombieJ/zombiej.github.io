@@ -82,10 +82,10 @@ export default ({ children }: LayoutProps) => {
         </Link>
       </Menu.Item>
 
-      <Menu.Item key="/graph" title="纪要">
+      <Menu.Item key="/graph" title="笔记">
         <Link to="/graph">
           <RadarChartOutlined />
-          <span className="nav-text">纪要</span>
+          <span className="nav-text">笔记</span>
         </Link>
       </Menu.Item>
     </Menu>
@@ -101,7 +101,14 @@ export default ({ children }: LayoutProps) => {
           <div className={styles.logo}>{config?.abbrTitle}</div>
           {$menu}
         </Header>
-        <Content style={{ padding: '0', background: '#FFF' }}>
+        <Content
+          style={{
+            padding: '0',
+            background: '#FFF',
+            minHeight: 'calc(100vh - 64px)',
+            position: 'relative',
+          }}
+        >
           {children}
         </Content>
       </Layout>

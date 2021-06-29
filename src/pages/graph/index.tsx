@@ -29,7 +29,7 @@ export default function Graph() {
     <Card
       title={
         <Space>
-          可视
+          笔记
           {isValidating && <SyncOutlined spin />}
         </Space>
       }
@@ -38,7 +38,7 @@ export default function Graph() {
           <Link to={`/graph/new`}>
             <Button size="small" type="primary">
               <DotChartOutlined />
-              创建纪要
+              创建笔记
             </Button>
           </Link>
         )

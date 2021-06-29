@@ -1,8 +1,23 @@
 import React from 'react';
-import { RightOutlined, DeleteOutlined, SyncOutlined } from '@ant-design/icons';
-import { Modal, Form, Input, Typography, Button, Switch, Space } from 'antd';
+import {
+  RightOutlined,
+  DeleteOutlined,
+  SyncOutlined,
+  HomeOutlined,
+} from '@ant-design/icons';
+import {
+  Modal,
+  Form,
+  Input,
+  Typography,
+  Button,
+  Switch,
+  Space,
+  Breadcrumb,
+} from 'antd';
 import classNames from 'classnames';
 import moment from 'moment';
+import isMobile from 'rc-util/es/isMobile';
 import RootContext from '@/context';
 import { get, set } from 'lodash';
 import styles from './LinkGraph.less';
@@ -12,6 +27,8 @@ const NOTE_MIN_WIDTH = 200;
 const NOTE_MAX_WIDTH = 300;
 
 const EMPTY_LIST: Note[] = [];
+
+const mobile = isMobile();
 
 const LinkGraphContext = React.createContext<{
   editable?: boolean;
@@ -92,7 +109,7 @@ function NoteBlock({ create, note, active, path, onSelect }: NoteBlockProps) {
   const selectRef = React.useRef<NodeJS.Timeout>();
 
   const onInternalSelect = () => {
-    if (onSelect) {
+    if (onSelect && (editable || note.children?.length)) {
       clearTimeout(selectRef.current!);
       selectRef.current = setTimeout(onSelect, !active ? 0 : 200);
     } else if (create) {
@@ -186,7 +203,11 @@ function NoteBlockList({
   return (
     <div
       className={styles.noteBlockList}
-      style={{ minWidth: NOTE_MIN_WIDTH, maxWidth: NOTE_MAX_WIDTH, ...style }}
+      style={{
+        width: NOTE_MIN_WIDTH,
+        maxWidth: mobile ? 'auto' : NOTE_MAX_WIDTH,
+        ...style,
+      }}
     >
       {notes.map((note, index) => (
         <NoteBlock
@@ -241,7 +262,7 @@ export default function LinkGraph({
 }: LinkGraphProps) {
   const { dateFormat } = React.useContext(RootContext);
   const [readOnly, setReadOnly] = React.useState(false);
-  const mergedEditable = editable && !readOnly;
+  const mergedEditable = editable && !readOnly && !mobile;
 
   const [editNotePath, setEditNotePath] = React.useState<
     (number | string)[] | null
@@ -348,6 +369,41 @@ export default function LinkGraph({
   };
 
   // =========================== Render ===========================
+  // >>>>> 笔记列表
+  let notesNode: React.ReactNode;
+  if (!mobile) {
+    notesNode = notesList.map((noteList, noteIndex) => (
+      <NoteBlockList
+        style={{
+          flex: noteIndex === notesList.length - 1 ? 'none' : '0 1 auto',
+        }}
+        path={path.slice(0, noteIndex)}
+        key={noteIndex}
+        notes={noteList}
+        activeIndex={path[noteIndex]}
+        onSelect={(index) => {
+          onUpdatePath(noteIndex, index);
+        }}
+      />
+    ));
+  } else {
+    const lastIndex = notesList.length - 1;
+    notesNode = (
+      <NoteBlockList
+        style={{
+          flex: 'auto',
+          marginRight: 16,
+        }}
+        path={path}
+        notes={notesList[lastIndex]}
+        activeIndex={path[lastIndex]}
+        onSelect={(index) => {
+          onUpdatePath(lastIndex, index);
+        }}
+      />
+    );
+  }
+
   return (
     <div
       style={{
@@ -364,71 +420,101 @@ export default function LinkGraph({
       <LinkGraphContext.Provider
         value={{ editable: mergedEditable, onEdit, onRemove }}
       >
-        <div style={{ marginBottom: 16, height: 32, flex: 'none' }}>
-          <Form
-            form={rootForm}
-            component={false}
-            layout="inline"
-            autoComplete="off"
-          >
-            <Space size="large">
-              {editable ? (
-                <Form.Item
-                  initialValue={title}
-                  label="标题"
-                  name="title"
-                  style={{ margin: 0 }}
-                >
-                  <Input autoComplete="off" />
-                </Form.Item>
-              ) : (
-                title
-              )}
+        {/* PC 操作栏 */}
+        {!mobile && (
+          <div style={{ marginBottom: 16, height: 32, flex: 'none' }}>
+            <Form
+              form={rootForm}
+              component={false}
+              layout="inline"
+              autoComplete="off"
+            >
+              <Space size="large">
+                {editable ? (
+                  <Form.Item
+                    initialValue={title}
+                    label="标题"
+                    name="title"
+                    style={{ margin: 0 }}
+                  >
+                    <Input autoComplete="off" />
+                  </Form.Item>
+                ) : (
+                  title
+                )}
 
-              {createTime && moment(createTime).format(dateFormat)}
+                {createTime && moment(createTime).format(dateFormat)}
 
-              {editable && (
-                <Switch
-                  checkedChildren="可编辑"
-                  unCheckedChildren="可编辑"
-                  checked={!readOnly}
-                  onChange={() => {
-                    setReadOnly(!readOnly);
-                  }}
-                />
-              )}
+                {editable && (
+                  <Switch
+                    checkedChildren="可编辑"
+                    unCheckedChildren="可编辑"
+                    checked={!readOnly}
+                    onChange={() => {
+                      setReadOnly(!readOnly);
+                    }}
+                  />
+                )}
 
-              {editable && (
-                <Button
-                  type="primary"
-                  onClick={() => {
-                    onSave?.({
-                      ...rootForm.getFieldsValue(),
-                      content: internalNotes,
-                    });
-                  }}
-                >
-                  保存
-                </Button>
-              )}
+                {editable && (
+                  <Button
+                    type="primary"
+                    onClick={() => {
+                      onSave?.({
+                        ...rootForm.getFieldsValue(),
+                        content: internalNotes,
+                      });
+                    }}
+                  >
+                    保存
+                  </Button>
+                )}
 
-              {editable && onDelete && (
-                <Button
-                  type="primary"
-                  danger
-                  style={{ position: 'absolute', right: 16 }}
-                  onClick={() => {
-                    onDelete();
-                  }}
-                >
-                  删除
-                </Button>
-              )}
+                {editable && onDelete && (
+                  <Button
+                    type="primary"
+                    danger
+                    style={{ position: 'absolute', right: 16 }}
+                    onClick={() => {
+                      onDelete();
+                    }}
+                  >
+                    删除
+                  </Button>
+                )}
 
-              {refreshing && <SyncOutlined spin />}
-            </Space>
-          </Form>
-        </div>
+                {refreshing && <SyncOutlined spin />}
+              </Space>
+            </Form>
+          </div>
+        )}
+
+        {/* Mobile 操作栏 */}
+        {mobile && (
+          <div style={{ flex: 'none', marginBottom: 16 }}>
+            <Breadcrumb>
+              <Breadcrumb.Item
+                onClick={() => {
+                  setPath([]);
+                }}
+              >
+                <HomeOutlined />
+              </Breadcrumb.Item>
+              {path.map((noteIndex, pathIndex) => {
+                return (
+                  <Breadcrumb.Item
+                    key={pathIndex}
+                    onClick={() => {
+                      setPath(path.slice(0, pathIndex + 1));
+                    }}
+                  >
+                    {notesList[pathIndex][noteIndex]?.title}
+                  </Breadcrumb.Item>
+                );
+              })}
+            </Breadcrumb>
+          </div>
+        )}
 
         <div
           style={{
@@ -446,22 +532,8 @@ export default function LinkGraph({
               height: '100%',
             }}
           >
-            {/* 操作栏 */}
-            {notesList.map((noteList, noteIndex) => (
-              <NoteBlockList
-                style={{
-                  flex:
-                    noteIndex === notesList.length - 1 ? 'none' : '0 1 auto',
-                }}
-                path={path.slice(0, noteIndex)}
-                key={noteIndex}
-                notes={noteList}
-                activeIndex={path[noteIndex]}
-                onSelect={(index) => {
-                  onUpdatePath(noteIndex, index);
-                }}
-              />
-            ))}
+            {/* 笔记列表 */}
+            {notesNode}
           </div>
         </div>
 
