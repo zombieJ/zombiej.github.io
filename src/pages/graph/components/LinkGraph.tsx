@@ -24,7 +24,7 @@ import styles from './LinkGraph.less';
 import { parseMarkdown } from './util';
 
 const NOTE_MIN_WIDTH = 200;
-const NOTE_MAX_WIDTH = 300;
+const NOTE_MAX_WIDTH = 400;
 
 const EMPTY_LIST: Note[] = [];
 
@@ -204,7 +204,7 @@ function NoteBlockList({
     <div
       className={styles.noteBlockList}
       style={{
-        width: NOTE_MIN_WIDTH,
+        minWidth: NOTE_MIN_WIDTH,
         maxWidth: mobile ? 'auto' : NOTE_MAX_WIDTH,
         ...style,
       }}
