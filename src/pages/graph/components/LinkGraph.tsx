@@ -432,7 +432,8 @@ export default function LinkGraph({
   // ============================ Drag ============================
   const moveRecord = React.useCallback(
     (dragPath: number[], hoverPath: number[]) => {
-      const rootNote = produce({ children: internalNotes }, (draftRootNote) => {
+      const fakeRootNote: Note = { children: internalNotes };
+      const rootNote = produce(fakeRootNote, (draftRootNote) => {
         // Drag
         const parentDragPath = getConnectedPath(dragPath.slice(0, -1), true);
         const parentDragNoteChildren: Note[] = get(
@@ -459,7 +460,27 @@ export default function LinkGraph({
         );
       });
 
-      setInternalNotes(rootNote.children);
+      setInternalNotes(rootNote.children!);
+
+      // Back of origin path
+      let current = fakeRootNote;
+      const pathKeys: string[] = [];
+      path.forEach((pathIndex) => {
+        current = current.children?.[pathIndex]!;
+        pathKeys.push(current.id!);
+      });
+
+      current = rootNote;
+      const newPath: number[] = [];
+      pathKeys.forEach((pathKey) => {
+        const currentIndex =
+          current.children?.findIndex((n) => n.id === pathKey) ?? -1;
+        if (currentIndex >= 0) {
+          newPath.push(currentIndex);
+          current = current.children?.[currentIndex]!;
+        }
+      });
+      setPath(newPath);
     },
     [internalNotes, path],
   );
