@@ -5,6 +5,10 @@ import {
   SyncOutlined,
   HomeOutlined,
 } from '@ant-design/icons';
+import produce from 'immer';
+import { DndProvider, useDrag, useDrop, DropTargetMonitor } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import { XYCoord } from 'dnd-core';
 import {
   Modal,
   Form,
@@ -34,9 +38,10 @@ const LinkGraphContext = React.createContext<{
   editable?: boolean;
   onEdit: (path: number[]) => void;
   onRemove: (path: number[]) => void;
+  moveRecord: (dragPath: number[], hoverPath: number[]) => void;
 }>(null as any);
 
-function getConnectedPath(path: number[]) {
+function getConnectedPath(path: number[], virtualRootNote = false) {
   const connectPath: (string | number)[] = [];
 
   path.forEach((noteIndex, index) => {
@@ -46,59 +51,137 @@ function getConnectedPath(path: number[]) {
     connectPath.push(noteIndex);
   });
 
+  if (virtualRootNote) {
+    if (path.length) {
+      connectPath.unshift('children');
+    }
+    connectPath.push('children');
+  }
+
   return connectPath;
 }
 
 export interface Note {
+  id?: string;
   title?: string;
   description?: string;
   children?: Note[];
 }
 
-const testNodes: Note[] = [
-  {
-    title: 'title',
-    description: 'desc',
-    children: [
-      {
-        title: 'title',
-        description: 'desc',
-        children: [
-          {
-            title: 'title',
-            description: 'desc',
-            children: [],
-          },
-        ],
-      },
-      {
-        title: 'title',
-        description: 'desc',
-        children: [],
-      },
-    ],
-  },
-  {
-    title: 'title',
-    description: 'desc',
-    children: [],
-  },
-];
-
 // =============================================================================
 // =                                   数据块                                   =
 // =============================================================================
 interface NoteBlockProps {
-  create?: boolean;
   note: Note;
   active?: boolean;
   onSelect?: () => void;
   path: number[];
 }
 
-function NoteBlock({ create, note, active, path, onSelect }: NoteBlockProps) {
-  const { editable, onEdit, onRemove } = React.useContext(LinkGraphContext);
+interface BasicNoteBlockProps extends NoteBlockProps {
+  id: string;
+  index: number;
+}
+interface CreateNoteBlockProps extends NoteBlockProps {
+  create: true;
+}
 
+const ItemTypes = {
+  CARD: 'card',
+};
+
+interface DragItem {
+  index: number;
+  id: string;
+  path: number[];
+  type: string;
+}
+
+function NoteBlock(props: BasicNoteBlockProps | CreateNoteBlockProps) {
+  const { create, note, active, path, onSelect, id, index } =
+    props as BasicNoteBlockProps & CreateNoteBlockProps;
+
+  const { editable, onEdit, onRemove, moveRecord } =
+    React.useContext(LinkGraphContext);
+  const containerRef = React.useRef<HTMLDivElement>(null);
+
+  // ===================== Drag & Drop ======================
+  const [{ handlerId }, drop] = useDrop({
+    accept: ItemTypes.CARD,
+    collect(monitor) {
+      return {
+        handlerId: monitor.getHandlerId(),
+      };
+    },
+    hover(item: DragItem, monitor: DropTargetMonitor) {
+      if (!containerRef.current) {
+        return;
+      }
+      // const dragIndex = item.index;
+      // const hoverIndex = index;
+      const dragPath = item.path;
+      const hoverPath = path;
+
+      // Don't replace items with themselves
+      if (dragPath.join('_') === hoverPath.join('_')) {
+        return;
+      }
+
+      // Determine rectangle on screen
+      const hoverBoundingRect = containerRef.current?.getBoundingClientRect();
+
+      // Get vertical middle
+      const hoverMiddleY =
+        (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+
+      // Determine mouse position
+      const clientOffset = monitor.getClientOffset();
+
+      // Get pixels to the top
+      const hoverClientY = (clientOffset as XYCoord).y - hoverBoundingRect.top;
+
+      // Only perform the move when the mouse has crossed half of the items height
+      // When dragging downwards, only move when the cursor is below 50%
+      // When dragging upwards, only move when the cursor is above 50%
+
+      // Dragging downwards
+      // if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
+      //   return;
+      // }
+
+      // // Dragging upwards
+      // if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
+      //   return;
+      // }
+
+      // Time to actually perform the action
+      moveRecord(dragPath, hoverPath);
+
+      // Note: we're mutating the monitor item here!
+      // Generally it's better to avoid mutations,
+      // but it's good here for the sake of performance
+      // to avoid expensive index searches.
+      item.path = hoverPath;
+    },
+  });
+
+  const [{ isDragging }, drag] = useDrag({
+    type: ItemTypes.CARD,
+    item: () => {
+      return { id, index, path };
+    },
+    collect: (monitor: any) => ({
+      isDragging: monitor.isDragging(),
+    }),
+  });
+
+  const opacity = isDragging ? 0 : 1;
+
+  if (!create) {
+    drag(drop(containerRef));
+  }
+
+  // ======================== Handle ========================
   // >>> Content
   const html = React.useMemo(
     () => parseMarkdown(note.description),
@@ -150,10 +233,12 @@ function NoteBlock({ create, note, active, path, onSelect }: NoteBlockProps) {
 
   return (
     <div
+      ref={containerRef}
       className={classNames(styles.noteBlock, {
         [styles.active]: active,
         [styles.create]: create,
       })}
+      style={{ opacity }}
       onClick={onInternalSelect}
       onDoubleClick={() => {
         clearTimeout(selectRef.current!);
@@ -209,17 +294,28 @@ function NoteBlockList({
         ...style,
       }}
     >
-      {notes.map((note, index) => (
-        <NoteBlock
-          path={[...path, index]}
-          key={index}
-          note={note}
-          active={index === activeIndex}
-          onSelect={() => {
-            onSelect(index);
-          }}
-        />
-      ))}
+      {notes.map((note, index) => {
+        if (!note.id) {
+          note.id = `${Date.now()}${Math.random().toFixed(10)}`.replace(
+            '0.',
+            '',
+          );
+        }
+
+        return (
+          <NoteBlock
+            id={note.id}
+            index={index}
+            path={[...path, index]}
+            key={index}
+            note={note}
+            active={index === activeIndex}
+            onSelect={() => {
+              onSelect(index);
+            }}
+          />
+        );
+      })}
       {editable && (
         <NoteBlock
           create
@@ -320,18 +416,24 @@ export default function LinkGraph({
       title: '确认',
       content: `确认删除 ${note.title || '该内容'} 吗？`,
       onOk: () => {
-        let clone: Note[] = JSON.parse(JSON.stringify(internalNotes));
-        set(clone, fullPath, null);
+        const rootNote = produce(
+          {
+            children: internalNotes,
+          },
+          (draftRootNote) => {
+            const parentPath = getConnectedPath(path.slice(0, -1), true);
+            const parentNoteChildren: Note[] = get(draftRootNote, parentPath);
+            const noteIndex = parentNoteChildren.findIndex(
+              (n) => n.id === note.id,
+            );
 
-        const parentPath = getConnectedPath(path.slice(0, -1));
-        const note: Note = get(clone, parentPath);
-        if (note) {
-          note.children = note.children?.filter((n) => n);
-        } else {
-          clone = clone.filter((n) => n);
-        }
+            if (noteIndex >= 0) {
+              parentNoteChildren.splice(noteIndex, 1);
+            }
+          },
+        );
 
-        setInternalNotes(clone);
+        setInternalNotes(rootNote.children);
         setPath(path.slice(0, -1));
       },
     });
@@ -347,6 +449,18 @@ export default function LinkGraph({
       }, 50);
     }
   }, [!!editNotePath]);
+
+  // ============================ Drag ============================
+  const moveRecord = React.useCallback(
+    (dragPath: number[], hoverPath: number[]) => {
+      // const nextNotes = produce(notes, (draftNotes) => {
+      //   const parentPath = getConnectedPath(path.slice(0, -1));
+      //   const note: Note = get(draftNotes, parentPath);
+      //   console.log('>>>', dragPath, hoverPath);
+      // });
+    },
+    [notes],
+  );
 
   // =========================== Submit ===========================
   const onUpdate = () => {
@@ -417,149 +531,151 @@ export default function LinkGraph({
         paddingTop: 16,
       }}
     >
-      <LinkGraphContext.Provider
-        value={{ editable: mergedEditable, onEdit, onRemove }}
-      >
-        {/* PC 操作栏 */}
-        {!mobile && (
-          <div style={{ marginBottom: 16, height: 32, flex: 'none' }}>
-            <Form
-              form={rootForm}
-              component={false}
-              layout="inline"
-              autoComplete="off"
-            >
-              <Space size="large">
-                {editable ? (
-                  <Form.Item
-                    initialValue={title}
-                    label="标题"
-                    name="title"
-                    style={{ margin: 0 }}
-                  >
-                    <Input autoComplete="off" />
-                  </Form.Item>
-                ) : (
-                  title
-                )}
-
-                {createTime && moment(createTime).format(dateFormat)}
-
-                {editable && (
-                  <Switch
-                    checkedChildren="可编辑"
-                    unCheckedChildren="可编辑"
-                    checked={!readOnly}
-                    onChange={() => {
-                      setReadOnly(!readOnly);
-                    }}
-                  />
-                )}
-
-                {editable && (
-                  <Button
-                    type="primary"
-                    onClick={() => {
-                      onSave?.({
-                        ...rootForm.getFieldsValue(),
-                        content: internalNotes,
-                      });
-                    }}
-                  >
-                    保存
-                  </Button>
-                )}
-
-                {editable && onDelete && (
-                  <Button
-                    type="primary"
-                    danger
-                    style={{ position: 'absolute', right: 16 }}
-                    onClick={() => {
-                      onDelete();
-                    }}
-                  >
-                    删除
-                  </Button>
-                )}
-
-                {refreshing && <SyncOutlined spin />}
-              </Space>
-            </Form>
-          </div>
-        )}
-
-        {/* Mobile 操作栏 */}
-        {mobile && (
-          <div style={{ flex: 'none', marginBottom: 16 }}>
-            <Breadcrumb>
-              <Breadcrumb.Item
-                onClick={() => {
-                  setPath([]);
-                }}
-              >
-                <HomeOutlined />
-              </Breadcrumb.Item>
-              {path.map((noteIndex, pathIndex) => {
-                return (
-                  <Breadcrumb.Item
-                    key={pathIndex}
-                    onClick={() => {
-                      setPath(path.slice(0, pathIndex + 1));
-                    }}
-                  >
-                    {notesList[pathIndex][noteIndex]?.title}
-                  </Breadcrumb.Item>
-                );
-              })}
-            </Breadcrumb>
-          </div>
-        )}
-
-        <div
-          style={{
-            flex: 'auto',
-            minHeight: 0,
-            position: 'relative',
-          }}
+      <DndProvider backend={HTML5Backend}>
+        <LinkGraphContext.Provider
+          value={{ editable: mergedEditable, onEdit, onRemove, moveRecord }}
         >
+          {/* PC 操作栏 */}
+          {!mobile && (
+            <div style={{ marginBottom: 16, height: 32, flex: 'none' }}>
+              <Form
+                form={rootForm}
+                component={false}
+                layout="inline"
+                autoComplete="off"
+              >
+                <Space size="large">
+                  {editable ? (
+                    <Form.Item
+                      initialValue={title}
+                      label="标题"
+                      name="title"
+                      style={{ margin: 0 }}
+                    >
+                      <Input autoComplete="off" />
+                    </Form.Item>
+                  ) : (
+                    title
+                  )}
+
+                  {createTime && moment(createTime).format(dateFormat)}
+
+                  {editable && (
+                    <Switch
+                      checkedChildren="可编辑"
+                      unCheckedChildren="可编辑"
+                      checked={!readOnly}
+                      onChange={() => {
+                        setReadOnly(!readOnly);
+                      }}
+                    />
+                  )}
+
+                  {editable && (
+                    <Button
+                      type="primary"
+                      onClick={() => {
+                        onSave?.({
+                          ...rootForm.getFieldsValue(),
+                          content: internalNotes,
+                        });
+                      }}
+                    >
+                      保存
+                    </Button>
+                  )}
+
+                  {editable && onDelete && (
+                    <Button
+                      type="primary"
+                      danger
+                      style={{ position: 'absolute', right: 16 }}
+                      onClick={() => {
+                        onDelete();
+                      }}
+                    >
+                      删除
+                    </Button>
+                  )}
+
+                  {refreshing && <SyncOutlined spin />}
+                </Space>
+              </Form>
+            </div>
+          )}
+
+          {/* Mobile 操作栏 */}
+          {mobile && (
+            <div style={{ flex: 'none', marginBottom: 16 }}>
+              <Breadcrumb>
+                <Breadcrumb.Item
+                  onClick={() => {
+                    setPath([]);
+                  }}
+                >
+                  <HomeOutlined />
+                </Breadcrumb.Item>
+                {path.map((noteIndex, pathIndex) => {
+                  return (
+                    <Breadcrumb.Item
+                      key={pathIndex}
+                      onClick={() => {
+                        setPath(path.slice(0, pathIndex + 1));
+                      }}
+                    >
+                      {notesList[pathIndex][noteIndex]?.title}
+                    </Breadcrumb.Item>
+                  );
+                })}
+              </Breadcrumb>
+            </div>
+          )}
+
           <div
             style={{
-              display: 'flex',
-              alignItems: 'start',
-              columnGap: 8,
+              flex: 'auto',
+              minHeight: 0,
               position: 'relative',
-              height: '100%',
             }}
           >
-            {/* 笔记列表 */}
-            {notesNode}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'start',
+                columnGap: 8,
+                position: 'relative',
+                height: '100%',
+              }}
+            >
+              {/* 笔记列表 */}
+              {notesNode}
+            </div>
           </div>
-        </div>
 
-        {/* 编辑框 */}
-        <Modal
-          visible={!!editNotePath && !readOnly}
-          onCancel={() => {
-            setEditNotePath(null);
-          }}
-          onOk={onUpdate}
-        >
-          <Form
-            form={form}
-            layout="vertical"
-            autoComplete="off"
-            onKeyDown={onSubmitKey}
+          {/* 编辑框 */}
+          <Modal
+            visible={!!editNotePath && !readOnly}
+            onCancel={() => {
+              setEditNotePath(null);
+            }}
+            onOk={onUpdate}
           >
-            <Form.Item name="title" label="标题">
-              <Input ref={titleRef} />
-            </Form.Item>
-            <Form.Item name="description" label="描述">
-              <Input.TextArea autoSize={{ minRows: 6 }} />
-            </Form.Item>
-          </Form>
-        </Modal>
-      </LinkGraphContext.Provider>
+            <Form
+              form={form}
+              layout="vertical"
+              autoComplete="off"
+              onKeyDown={onSubmitKey}
+            >
+              <Form.Item name="title" label="标题">
+                <Input ref={titleRef} />
+              </Form.Item>
+              <Form.Item name="description" label="描述">
+                <Input.TextArea autoSize={{ minRows: 6 }} />
+              </Form.Item>
+            </Form>
+          </Modal>
+        </LinkGraphContext.Provider>
+      </DndProvider>
     </div>
   );
 }
