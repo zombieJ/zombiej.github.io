@@ -113,12 +113,10 @@ function NoteBlock(props: BasicNoteBlockProps | CreateNoteBlockProps) {
         handlerId: monitor.getHandlerId(),
       };
     },
-    hover(item: DragItem, monitor: DropTargetMonitor) {
+    drop(item: DragItem, monitor: DropTargetMonitor) {
       if (!containerRef.current) {
         return;
       }
-      // const dragIndex = item.index;
-      // const hoverIndex = index;
       const dragPath = item.path;
       const hoverPath = path;
 
@@ -170,12 +168,14 @@ function NoteBlock(props: BasicNoteBlockProps | CreateNoteBlockProps) {
     item: () => {
       return { id, index, path };
     },
-    collect: (monitor: any) => ({
-      isDragging: monitor.isDragging(),
-    }),
+    collect: (monitor: any) => {
+      return {
+        isDragging: monitor.isDragging(),
+      };
+    },
   });
 
-  const opacity = isDragging ? 0 : 1;
+  const opacity = isDragging ? 0.5 : 1;
 
   if (!create) {
     drag(drop(containerRef));
@@ -307,7 +307,7 @@ function NoteBlockList({
             id={note.id}
             index={index}
             path={[...path, index]}
-            key={index}
+            key={note.id}
             note={note}
             active={index === activeIndex}
             onSelect={() => {
@@ -453,13 +453,37 @@ export default function LinkGraph({
   // ============================ Drag ============================
   const moveRecord = React.useCallback(
     (dragPath: number[], hoverPath: number[]) => {
-      // const nextNotes = produce(notes, (draftNotes) => {
-      //   const parentPath = getConnectedPath(path.slice(0, -1));
-      //   const note: Note = get(draftNotes, parentPath);
-      //   console.log('>>>', dragPath, hoverPath);
-      // });
+      const rootNote = produce({ children: internalNotes }, (draftRootNote) => {
+        // Drag
+        const parentDragPath = getConnectedPath(dragPath.slice(0, -1), true);
+        const parentDragNoteChildren: Note[] = get(
+          draftRootNote,
+          parentDragPath,
+        );
+
+        // Hover
+        const parentHoverPath = getConnectedPath(hoverPath.slice(0, -1), true);
+        const parentHoverNoteChildren: Note[] = get(
+          draftRootNote,
+          parentHoverPath,
+        );
+
+        const [dragRecord] = parentDragNoteChildren.splice(
+          dragPath[dragPath.length - 1],
+          1,
+        );
+
+        parentHoverNoteChildren.splice(
+          hoverPath[hoverPath.length - 1],
+          0,
+          dragRecord,
+        );
+      });
+
+      console.log('DD:', dragPath, hoverPath, rootNote.children);
+      setInternalNotes(rootNote.children);
     },
-    [notes],
+    [internalNotes],
   );
 
   // =========================== Submit ===========================
