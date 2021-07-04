@@ -8,7 +8,6 @@ import {
 import produce from 'immer';
 import { DndProvider, useDrag, useDrop, DropTargetMonitor } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { XYCoord } from 'dnd-core';
 import {
   Modal,
   Form,
@@ -121,36 +120,16 @@ function NoteBlock(props: BasicNoteBlockProps | CreateNoteBlockProps) {
       const hoverPath = path;
 
       // Don't replace items with themselves
-      if (dragPath.join('_') === hoverPath.join('_')) {
+      const dragPathStr = [...dragPath, ''].join('_');
+      const hoverPathStr = [...hoverPath, ''].join('_');
+      if (dragPathStr === hoverPathStr) {
         return;
       }
 
-      // Determine rectangle on screen
-      const hoverBoundingRect = containerRef.current?.getBoundingClientRect();
-
-      // Get vertical middle
-      const hoverMiddleY =
-        (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
-
-      // Determine mouse position
-      const clientOffset = monitor.getClientOffset();
-
-      // Get pixels to the top
-      const hoverClientY = (clientOffset as XYCoord).y - hoverBoundingRect.top;
-
-      // Only perform the move when the mouse has crossed half of the items height
-      // When dragging downwards, only move when the cursor is below 50%
-      // When dragging upwards, only move when the cursor is above 50%
-
-      // Dragging downwards
-      // if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
-      //   return;
-      // }
-
-      // // Dragging upwards
-      // if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
-      //   return;
-      // }
+      // Not allow nest
+      if (hoverPathStr.startsWith(dragPathStr)) {
+        return;
+      }
 
       // Time to actually perform the action
       moveRecord(dragPath, hoverPath);
@@ -480,10 +459,9 @@ export default function LinkGraph({
         );
       });
 
-      console.log('DD:', dragPath, hoverPath, rootNote.children);
       setInternalNotes(rootNote.children);
     },
-    [internalNotes],
+    [internalNotes, path],
   );
 
   // =========================== Submit ===========================
