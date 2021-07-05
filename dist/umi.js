@@ -90478,12 +90478,13 @@
               className: wr.a.title,
               children: [
                 n,
-                Object(xo['jsx'])(S['a'].Link, {
-                  onClick: a,
-                  children: Object(xo['jsx'])(jo, {
-                    className: wr.a.fullScreen,
+                a &&
+                  Object(xo['jsx'])(S['a'].Link, {
+                    onClick: a,
+                    children: Object(xo['jsx'])(jo, {
+                      className: wr.a.fullScreen,
+                    }),
                   }),
-                }),
               ],
             }),
           (r || '').trim() &&

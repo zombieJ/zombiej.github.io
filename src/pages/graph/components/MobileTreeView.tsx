@@ -20,9 +20,11 @@ function ComposeTitle(props: { note: Note; onView?: React.MouseEventHandler }) {
       {title && (
         <h3 className={styles.title}>
           {title}
-          <Typography.Link onClick={onView}>
-            <FullscreenOutlined className={styles.fullScreen} />
-          </Typography.Link>
+          {onView && (
+            <Typography.Link onClick={onView}>
+              <FullscreenOutlined className={styles.fullScreen} />
+            </Typography.Link>
+          )}
         </h3>
       )}
       {(description || '').trim() && (
