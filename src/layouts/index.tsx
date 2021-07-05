@@ -36,6 +36,12 @@ export default ({ children }: LayoutProps) => {
     dateFormat: string;
   }>('/data/config.json');
 
+  React.useEffect(() => {
+    if (config?.title) {
+      document.title = config.title;
+    }
+  }, [config]);
+
   // ============================= Empty ==============================
   if (!config) {
     return <FullSpin />;
