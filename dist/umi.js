@@ -776,7 +776,13 @@
         h = l[1],
         m = Object(d['a'])('/data/config.json'),
         v = m.data;
-      if (!v) return Object(z['jsx'])(H['a'], {});
+      if (
+        (f.a.useEffect(() => {
+          null !== v && void 0 !== v && v.title && (document.title = v.title);
+        }, [v]),
+        !v)
+      )
+        return Object(z['jsx'])(H['a'], {});
       var g,
         b = Object(z['jsxs'])(a['a'], {
           theme: 'dark',
@@ -87557,12 +87563,22 @@
         E = Object(Y['a'])(L, 2),
         P = E[0],
         A = E[1],
-        N = (e, t) => {
+        N = s.a.useState(P),
+        I = Object(Y['a'])(N, 2),
+        R = I[0],
+        F = I[1];
+      function H(e) {
+        A(e), F(e);
+      }
+      function z(e) {
+        A(e), F(P);
+      }
+      var W = (e, t) => {
           var n = P.slice(0, e),
             r = [...n];
-          (r[e] = t), r.join('_') === P.join('_') ? A(n) : A(r);
+          (r[e] = t), r.join('_') === P.join('_') ? H(n) : H(r);
         },
-        I = s.a.useMemo(() => {
+        U = s.a.useMemo(() => {
           var e = ot({ children: o }, (e) => {
             function t(e) {
               var n;
@@ -87577,16 +87593,16 @@
           });
           return e.children;
         }, [o]),
-        R = s.a.useState(I),
-        F = Object(Y['a'])(R, 2),
-        H = F[0],
-        z = F[1];
+        G = s.a.useState(U),
+        $ = Object(Y['a'])(G, 2),
+        X = $[0],
+        Q = $[1];
       s.a.useEffect(() => {
-        z(I);
-      }, [I]);
-      var W = s.a.useMemo(() => {
+        Q(U);
+      }, [U]);
+      var Z = s.a.useMemo(() => {
           for (
-            var e = null !== H && void 0 !== H && H.length ? H : [],
+            var e = null !== X && void 0 !== X && X.length ? X : [],
               t = [e],
               n = 0;
             n < P.length;
@@ -87599,13 +87615,13 @@
               t.push(e);
           }
           return t;
-        }, [P, H]),
-        U = (e) => {
+        }, [P, X]),
+        ee = (e) => {
           _(ea(e));
         },
-        G = (e) => {
+        te = (e) => {
           var t = ea(e),
-            n = Object(Wr['get'])(H, t);
+            n = Object(Wr['get'])(X, t);
           q['a'].confirm({
             title: '\u786e\u8ba4',
             content: '\u786e\u8ba4\u5220\u9664 '.concat(
@@ -87613,29 +87629,29 @@
               ' \u5417\uff1f',
             ),
             onOk: () => {
-              var t = ot({ children: H }, (t) => {
+              var t = ot({ children: X }, (t) => {
                 var r = ea(e.slice(0, -1), !0),
                   a = Object(Wr['get'])(t, r),
                   o = a.findIndex((e) => e.id === n.id);
                 o >= 0 && a.splice(o, 1);
               });
-              z(t.children), A(e.slice(0, -1));
+              Q(t.children), H(e.slice(0, -1));
             },
           });
         };
       s.a.useEffect(() => {
         b &&
           (M.resetFields(),
-          M.setFieldsValue(Object(Wr['get'])(H, b)),
+          M.setFieldsValue(Object(Wr['get'])(X, b)),
           setTimeout(() => {
             var e;
             null === (e = w.current) || void 0 === e || e.focus();
           }, 50));
       }, [!!b]);
-      var $,
-        X = s.a.useCallback(
+      var re,
+        ae = s.a.useCallback(
           (e, t) => {
-            var n = { id: 'root', children: H },
+            var n = { id: 'root', children: X },
               r = ot(n, (n) => {
                 var r = ea(e.slice(0, -1), !0),
                   a = Object(Wr['get'])(n, r),
@@ -87646,7 +87662,7 @@
                   c = s[0];
                 i.splice(t[t.length - 1], 0, c);
               });
-            z(r.children);
+            Q(r.children);
             var a = n,
               o = [];
             P.forEach((e) => {
@@ -87673,45 +87689,45 @@
                 (a =
                   null === (r = a.children) || void 0 === r ? void 0 : r[o]));
             }),
-              A(i);
+              H(i);
           },
-          [H, P],
+          [X, P],
         ),
-        Q = () => {
-          var e = JSON.parse(JSON.stringify(H)),
+        oe = () => {
+          var e = JSON.parse(JSON.stringify(X)),
             t = M.getFieldsValue();
           Object.keys(t).forEach((n) => {
             var r = t[n];
             Object(Wr['set'])(e, [...b, n], r);
           }),
             _(null),
-            z(e);
+            Q(e);
         },
-        Z = (e) => {
-          13 === e.which && (e.metaKey || e.ctrlKey) && Q();
+        ue = (e) => {
+          13 === e.which && (e.metaKey || e.ctrlKey) && oe();
         };
       if (Qr) {
-        var ee = W.length - 1;
-        $ = Object(Jr['jsx'])(ra, {
+        var se = Z.length - 1;
+        re = Object(Jr['jsx'])(ra, {
           style: { flex: 'auto', marginRight: 16 },
           path: P,
-          notes: W[ee],
-          activeIndex: P[ee],
+          notes: Z[se],
+          activeIndex: R[se],
           onSelect: (e) => {
-            N(ee, e);
+            W(se, e);
           },
         });
       } else
-        $ = W.map((e, t) =>
+        re = Z.map((e, t) =>
           Object(Jr['jsx'])(
             ra,
             {
-              style: { flex: t === W.length - 1 ? 'none' : '0 1 auto' },
+              style: { flex: t === Z.length - 1 ? 'none' : '0 1 auto' },
               path: P.slice(0, t),
               notes: e,
               activeIndex: P[t],
               onSelect: (e) => {
-                N(t, e);
+                W(t, e);
               },
             },
             t,
@@ -87731,7 +87747,7 @@
         children: Object(Jr['jsx'])(qn['a'], {
           backend: Ir,
           children: Object(Jr['jsxs'])(Zr.Provider, {
-            value: { editable: v, onEdit: U, onRemove: G, moveRecord: X },
+            value: { editable: v, onEdit: ee, onRemove: te, moveRecord: ae },
             children: [
               !Qr &&
                 Object(Jr['jsx'])('div', {
@@ -87775,7 +87791,7 @@
                                   Object(J['a'])(
                                     Object(J['a'])({}, D.getFieldsValue()),
                                     {},
-                                    { content: H },
+                                    { content: X },
                                   ),
                                 );
                             },
@@ -87804,7 +87820,7 @@
                     children: [
                       Object(Jr['jsx'])(S.Item, {
                         onClick: () => {
-                          A([]);
+                          z([]);
                         },
                         children: Object(Jr['jsx'])(ie, {}),
                       }),
@@ -87814,10 +87830,10 @@
                           S.Item,
                           {
                             onClick: () => {
-                              A(P.slice(0, t + 1));
+                              z(P.slice(0, t + 1));
                             },
                             children:
-                              null === (n = W[t][e]) || void 0 === n
+                              null === (n = Z[t][e]) || void 0 === n
                                 ? void 0
                                 : n.title,
                           },
@@ -87837,7 +87853,7 @@
                     position: 'relative',
                     height: '100%',
                   },
-                  children: $,
+                  children: re,
                 }),
               }),
               Object(Jr['jsx'])(q['a'], {
@@ -87845,12 +87861,12 @@
                 onCancel: () => {
                   _(null);
                 },
-                onOk: Q,
+                onOk: oe,
                 children: Object(Jr['jsxs'])(K['a'], {
                   form: M,
                   layout: 'vertical',
                   autoComplete: 'off',
-                  onKeyDown: Z,
+                  onKeyDown: ue,
                   children: [
                     Object(Jr['jsx'])(K['a'].Item, {
                       name: 'title',

@@ -33,6 +33,10 @@ const EMPTY_LIST: Note[] = [];
 
 const mobile = isMobile();
 
+function getId() {
+  return `${Date.now()}${Math.random().toFixed(10)}`.replace('0.', '');
+}
+
 const LinkGraphContext = React.createContext<{
   editable?: boolean;
   onEdit: (path: number[]) => void;
@@ -345,7 +349,18 @@ export default function LinkGraph({
   const [rootForm] = Form.useForm();
 
   // ============================ Path ============================
-  const [path, setPath] = React.useState<number[]>([]);
+  const [path, setInternalPath] = React.useState<number[]>([]);
+  const [highlightPath, setHightPath] = React.useState(path);
+
+  function setPath(newPath: number[]) {
+    setInternalPath(newPath);
+    setHightPath(newPath);
+  }
+
+  function setBreadcrumbPath(newPath: number[]) {
+    setInternalPath(newPath);
+    setHightPath(path);
+  }
 
   const onUpdatePath = (pathIndex: number, index: number) => {
     const parentPath = path.slice(0, pathIndex);
@@ -364,10 +379,7 @@ export default function LinkGraph({
     const rootNote = produce({ children: notes } as Note, (draftRootNode) => {
       function fillId(note: Note) {
         if (!note.id) {
-          note.id = `${Date.now()}${Math.random().toFixed(10)}`.replace(
-            '0.',
-            '',
-          );
+          note.id = getId();
         }
 
         note.children?.forEach(fillId);
@@ -502,16 +514,19 @@ export default function LinkGraph({
 
   // =========================== Submit ===========================
   const onUpdate = () => {
-    const clone = JSON.parse(JSON.stringify(internalNotes));
+    const newNotes = produce(internalNotes, (draftNotes) => {
+      const values = form.getFieldsValue();
 
-    const values = form.getFieldsValue();
-    Object.keys(values).forEach((key) => {
-      const value = values[key];
-      set(clone, [...editNotePath!, key], value);
+      set(draftNotes, [...editNotePath!, 'id'], getId());
+
+      Object.keys(values).forEach((key) => {
+        const value = values[key];
+        set(draftNotes, [...editNotePath!, key], value);
+      });
     });
 
     setEditNotePath(null);
-    setInternalNotes(clone);
+    setInternalNotes(newNotes);
   };
 
   const onSubmitKey: React.KeyboardEventHandler = (e) => {
@@ -548,7 +563,7 @@ export default function LinkGraph({
         }}
         path={path}
         notes={notesList[lastIndex]}
-        activeIndex={path[lastIndex]}
+        activeIndex={highlightPath[lastIndex]}
         onSelect={(index) => {
           onUpdatePath(lastIndex, index);
         }}
@@ -648,7 +663,7 @@ export default function LinkGraph({
               <Breadcrumb>
                 <Breadcrumb.Item
                   onClick={() => {
-                    setPath([]);
+                    setBreadcrumbPath([]);
                   }}
                 >
                   <HomeOutlined />
@@ -658,7 +673,7 @@ export default function LinkGraph({
                     <Breadcrumb.Item
                       key={pathIndex}
                       onClick={() => {
-                        setPath(path.slice(0, pathIndex + 1));
+                        setBreadcrumbPath(path.slice(0, pathIndex + 1));
                       }}
                     >
                       {notesList[pathIndex][noteIndex]?.title}
