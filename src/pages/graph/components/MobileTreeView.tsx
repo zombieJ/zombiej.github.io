@@ -1,19 +1,30 @@
 import React from 'react';
 import classNames from 'classnames';
-import { Tree, TreeDataNode, Typography } from 'antd';
+import { FullscreenOutlined } from '@ant-design/icons';
+import { Tree, TreeDataNode, Typography, Modal } from 'antd';
 import { Note } from './LinkGraph';
 import { parseMarkdown } from './util';
 import styles from './LinkGraph.less';
 
-function ComposeTitle(props: { note: Note }) {
-  const { title, description } = props.note;
+function ComposeTitle(props: { note: Note; onView?: React.MouseEventHandler }) {
+  const {
+    note: { title, description },
+    onView,
+  } = props;
 
   // >>> Content
   const html = React.useMemo(() => parseMarkdown(description), [description]);
 
   return (
     <div className={classNames(styles.holder, styles.mobile)}>
-      {title && <h3 className={styles.title}>{title}</h3>}
+      {title && (
+        <h3 className={styles.title}>
+          {title}
+          <Typography.Link onClick={onView}>
+            <FullscreenOutlined className={styles.fullScreen} />
+          </Typography.Link>
+        </h3>
+      )}
       {(description || '').trim() && (
         <Typography className={styles.content}>
           <div
@@ -27,7 +38,17 @@ function ComposeTitle(props: { note: Note }) {
 }
 
 function renderTitle(treeNode: { note: Note }) {
-  return <ComposeTitle note={treeNode.note} />;
+  return (
+    <ComposeTitle
+      note={treeNode.note}
+      onView={() => {
+        Modal.info({
+          content: <ComposeTitle note={treeNode.note} />,
+          width: '100%',
+        });
+      }}
+    />
+  );
 }
 
 function toTreeData(data: Note[]) {
@@ -53,7 +74,6 @@ export default function MobileTreeView(props: MobileTreeViewProps) {
   const { data } = props;
 
   const treeData = React.useMemo(() => toTreeData(data), [data]);
-  console.log(treeData);
 
   return (
     <Tree

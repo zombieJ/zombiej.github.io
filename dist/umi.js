@@ -79440,6 +79440,7 @@
       title: 'title___1n5FR',
       dangerHolder: 'dangerHolder___8aWQf',
       mobile: 'mobile___1XhC0',
+      fullScreen: 'fullScreen___mvC4h',
       noteBlockList: 'noteBlockList___3hDps',
     };
   },
@@ -84283,7 +84284,7 @@
   vr5h: function (e, t, n) {
     'use strict';
     n.d(t, 'a', function () {
-      return Io;
+      return zo;
     });
     var r = {};
     n.r(r),
@@ -90437,66 +90438,109 @@
       });
     var _o = bo,
       wo = _o,
-      Oo = n('ikfJ');
-    function ko(e) {
+      Oo = {
+        icon: {
+          tag: 'svg',
+          attrs: { viewBox: '64 64 896 896', focusable: 'false' },
+          children: [
+            {
+              tag: 'path',
+              attrs: {
+                d: 'M290 236.4l43.9-43.9a8.01 8.01 0 00-4.7-13.6L169 160c-5.1-.6-9.5 3.7-8.9 8.9L179 329.1c.8 6.6 8.9 9.4 13.6 4.7l43.7-43.7L370 423.7c3.1 3.1 8.2 3.1 11.3 0l42.4-42.3c3.1-3.1 3.1-8.2 0-11.3L290 236.4zm352.7 187.3c3.1 3.1 8.2 3.1 11.3 0l133.7-133.6 43.7 43.7a8.01 8.01 0 0013.6-4.7L863.9 169c.6-5.1-3.7-9.5-8.9-8.9L694.8 179c-6.6.8-9.4 8.9-4.7 13.6l43.9 43.9L600.3 370a8.03 8.03 0 000 11.3l42.4 42.4zM845 694.9c-.8-6.6-8.9-9.4-13.6-4.7l-43.7 43.7L654 600.3a8.03 8.03 0 00-11.3 0l-42.4 42.3a8.03 8.03 0 000 11.3L734 787.6l-43.9 43.9a8.01 8.01 0 004.7 13.6L855 864c5.1.6 9.5-3.7 8.9-8.9L845 694.9zm-463.7-94.6a8.03 8.03 0 00-11.3 0L236.3 733.9l-43.7-43.7a8.01 8.01 0 00-13.6 4.7L160.1 855c-.6 5.1 3.7 9.5 8.9 8.9L329.2 845c6.6-.8 9.4-8.9 4.7-13.6L290 787.6 423.7 654c3.1-3.1 3.1-8.2 0-11.3l-42.4-42.4z',
+              },
+            },
+          ],
+        },
+        name: 'fullscreen',
+        theme: 'outlined',
+      },
+      ko = Oo,
+      Mo = function (e, t) {
+        return s['createElement'](
+          Y['a'],
+          Object.assign({}, e, { ref: t, icon: ko }),
+        );
+      };
+    Mo.displayName = 'FullscreenOutlined';
+    var jo = s['forwardRef'](Mo),
+      xo = n('ikfJ');
+    function Do(e) {
       var t = e.note,
         n = t.title,
         r = t.description,
-        a = c.a.useMemo(() => Mr(r), [r]);
-      return Object(Oo['jsxs'])('div', {
+        a = e.onView,
+        o = c.a.useMemo(() => Mr(r), [r]);
+      return Object(xo['jsxs'])('div', {
         className: p()(wr.a.holder, wr.a.mobile),
         children: [
-          n && Object(Oo['jsx'])('h3', { className: wr.a.title, children: n }),
+          n &&
+            Object(xo['jsxs'])('h3', {
+              className: wr.a.title,
+              children: [
+                n,
+                Object(xo['jsx'])(S['a'].Link, {
+                  onClick: a,
+                  children: Object(xo['jsx'])(jo, {
+                    className: wr.a.fullScreen,
+                  }),
+                }),
+              ],
+            }),
           (r || '').trim() &&
-            Object(Oo['jsx'])(S['a'], {
+            Object(xo['jsx'])(S['a'], {
               className: wr.a.content,
-              children: Object(Oo['jsx'])('div', {
+              children: Object(xo['jsx'])('div', {
                 className: wr.a.dangerHolder,
-                dangerouslySetInnerHTML: { __html: a },
+                dangerouslySetInnerHTML: { __html: o },
               }),
             }),
         ],
       });
     }
-    function Mo(e) {
-      return Object(Oo['jsx'])(ko, { note: e.note });
+    function Eo(e) {
+      return Object(xo['jsx'])(Do, {
+        note: e.note,
+        onView: () => {
+          D['a'].info({
+            content: Object(xo['jsx'])(Do, { note: e.note }),
+            width: '100%',
+          });
+        },
+      });
     }
-    function jo(e) {
+    function Lo(e) {
       function t(e) {
         return (e || []).map((e) => ({
           key: e.id,
           note: e,
-          title: Mo,
+          title: Eo,
           children: t(e.children),
         }));
       }
       return t(e);
     }
-    function xo(e) {
+    function So(e) {
       var t = e.data,
-        n = c.a.useMemo(() => jo(t), [t]);
-      return (
-        console.log(n),
-        Object(Oo['jsx'])(wo, {
-          style: { width: '100%' },
-          treeData: n,
-          showLine: { showLeafIcon: !1 },
-          blockNode: !0,
-        })
-      );
+        n = c.a.useMemo(() => Lo(t), [t]);
+      return Object(xo['jsx'])(wo, {
+        style: { width: '100%' },
+        treeData: n,
+        showLine: { showLeafIcon: !1 },
+        blockNode: !0,
+      });
     }
-    var Do = 200,
-      Eo = 400,
-      Lo = [],
-      So = Object(yr['a'])();
-    function To() {
+    var To = 200,
+      Co = 400,
+      Po = [],
+      Yo = Object(yr['a'])();
+    function Ao() {
       return ''
         .concat(Date.now())
         .concat(Math.random().toFixed(10))
         .replace('0.', '');
     }
-    var Co = c.a.createContext(null);
-    function Po(e) {
+    var No = c.a.createContext(null);
+    function Io(e) {
       var t = arguments.length > 1 && void 0 !== arguments[1] && arguments[1],
         n = [];
       return (
@@ -90507,8 +90551,8 @@
         n
       );
     }
-    var Yo = { CARD: 'card' };
-    function Ao(e) {
+    var Ro = { CARD: 'card' };
+    function Fo(e) {
       var t,
         n = e,
         r = n.create,
@@ -90518,16 +90562,16 @@
         u = n.onSelect,
         s = n.id,
         f = n.index,
-        d = c.a.useContext(Co),
+        d = c.a.useContext(No),
         h = d.editable,
         m = d.onEdit,
         v = d.onRemove,
         y = d.moveRecord,
         g = c.a.useRef(null),
         b = 1;
-      if (!So) {
+      if (!Yo) {
         var _ = Kt({
-            accept: Yo.CARD,
+            accept: Ro.CARD,
             collect(e) {
               return { handlerId: e.getHandlerId() };
             },
@@ -90544,7 +90588,7 @@
           w = Object(l['a'])(_, 2),
           O = (w[0].handlerId, w[1]),
           k = On({
-            type: Yo.CARD,
+            type: Ro.CARD,
             item: () => ({ id: s, index: f, path: i }),
             collect: (e) => ({ isDragging: e.isDragging() }),
           }),
@@ -90569,21 +90613,21 @@
       null !== (t = a.children) &&
         void 0 !== t &&
         t.length &&
-        (D = Object(Oo['jsx'])('div', {
+        (D = Object(xo['jsx'])('div', {
           className: wr.a.extra,
-          children: Object(Oo['jsx'])(T['a'], {}),
+          children: Object(xo['jsx'])(T['a'], {}),
         }));
       var Y =
         u &&
         h &&
-        Object(Oo['jsx'])('div', {
+        Object(xo['jsx'])('div', {
           className: p()(wr.a.extra, wr.a.hover),
           onClick: (e) => {
             e.stopPropagation(), v(i);
           },
-          children: Object(Oo['jsx'])(N, {}),
+          children: Object(xo['jsx'])(N, {}),
         });
-      return Object(Oo['jsxs'])('div', {
+      return Object(xo['jsxs'])('div', {
         ref: g,
         className: p()(wr.a.noteBlock, { [wr.a.active]: o, [wr.a.create]: r }),
         style: { opacity: b },
@@ -90592,19 +90636,19 @@
           clearTimeout(L.current), P(i);
         },
         children: [
-          Object(Oo['jsxs'])('div', {
+          Object(xo['jsxs'])('div', {
             className: wr.a.holder,
             children: [
               !a.title && !E && '\u65e0\u6807\u9898',
               a.title &&
-                Object(Oo['jsx'])('h3', {
+                Object(xo['jsx'])('h3', {
                   className: wr.a.title,
                   children: a.title,
                 }),
               (a.description || '').trim() &&
-                Object(Oo['jsx'])(S['a'], {
+                Object(xo['jsx'])(S['a'], {
                   className: wr.a.content,
-                  children: Object(Oo['jsx'])('div', {
+                  children: Object(xo['jsx'])('div', {
                     className: wr.a.dangerHolder,
                     dangerouslySetInnerHTML: { __html: E },
                   }),
@@ -90616,25 +90660,25 @@
         ],
       });
     }
-    function No(e) {
+    function Ho(e) {
       var t = e.style,
         n = e.notes,
         r = e.activeIndex,
         a = e.path,
         o = e.onSelect,
-        i = c.a.useContext(Co),
+        i = c.a.useContext(No),
         u = i.editable;
       return n.length || u
-        ? Object(Oo['jsxs'])('div', {
+        ? Object(xo['jsxs'])('div', {
             className: wr.a.noteBlockList,
             style: Object(L['a'])(
-              { minWidth: Do, maxWidth: So ? 'auto' : Eo },
+              { minWidth: To, maxWidth: Yo ? 'auto' : Co },
               t,
             ),
             children: [
               n.map((e, t) =>
-                Object(Oo['jsx'])(
-                  Ao,
+                Object(xo['jsx'])(
+                  Fo,
                   {
                     id: e.id,
                     index: t,
@@ -90649,7 +90693,7 @@
                 ),
               ),
               u &&
-                Object(Oo['jsx'])(Ao, {
+                Object(xo['jsx'])(Fo, {
                   create: !0,
                   path: [...a, n.length],
                   note: { id: 'create', description: '\\+ \u65b0\u5efa' },
@@ -90658,12 +90702,12 @@
           })
         : null;
     }
-    function Io(e) {
+    function zo(e) {
       var t = e.title,
         n = e.editable,
         r = e.createTime,
         i = e.notes,
-        u = void 0 === i ? Lo : i,
+        u = void 0 === i ? Po : i,
         s = e.onSave,
         f = e.onDelete,
         d = e.refreshing,
@@ -90673,7 +90717,7 @@
         v = Object(l['a'])(m, 2),
         y = v[0],
         g = v[1],
-        b = n && !y && !So,
+        b = n && !y && !Yo,
         _ = c.a.useState(null),
         w = Object(l['a'])(_, 2),
         O = w[0],
@@ -90698,7 +90742,7 @@
           var e = Ne({ children: u }, (e) => {
             function t(e) {
               var n;
-              e.id || (e.id = To()),
+              e.id || (e.id = Ao()),
                 null === (n = e.children) || void 0 === n || n.forEach(t);
             }
             t(e);
@@ -90729,10 +90773,10 @@
           return t;
         }, [F, V]),
         J = (e) => {
-          k(Po(e));
+          k(Io(e));
         },
         G = (e) => {
-          var t = Po(e),
+          var t = Io(e),
             n = Object(br['get'])(V, t);
           D['a'].confirm({
             title: '\u786e\u8ba4',
@@ -90742,7 +90786,7 @@
             ),
             onOk: () => {
               var t = Ne({ children: V }, (t) => {
-                var r = Po(e.slice(0, -1), !0),
+                var r = Io(e.slice(0, -1), !0),
                   a = Object(br['get'])(t, r),
                   o = a.findIndex((e) => e.id === n.id);
                 o >= 0 && a.splice(o, 1);
@@ -90765,9 +90809,9 @@
           (e, t) => {
             var n = { id: 'root', children: V },
               r = Ne(n, (n) => {
-                var r = Po(e.slice(0, -1), !0),
+                var r = Io(e.slice(0, -1), !0),
                   a = Object(br['get'])(n, r),
-                  o = Po(t.slice(0, -1), !0),
+                  o = Io(t.slice(0, -1), !0),
                   i = Object(br['get'])(n, o),
                   u = a.splice(e[e.length - 1], 1),
                   s = Object(l['a'])(u, 1),
@@ -90808,7 +90852,7 @@
         Q = () => {
           var e = Ne(V, (e) => {
             var t = C.getFieldsValue();
-            Object(br['set'])(e, [...O, 'id'], To()),
+            Object(br['set'])(e, [...O, 'id'], Ao()),
               Object.keys(t).forEach((n) => {
                 var r = t[n];
                 Object(br['set'])(e, [...O, n], r);
@@ -90820,9 +90864,9 @@
           13 === e.which && (e.metaKey || e.ctrlKey) && Q();
         };
       return (
-        ($ = So
-          ? Object(Oo['jsx'])(xo, { data: V })
-          : Object(Oo['jsx'])('div', {
+        ($ = Yo
+          ? Object(xo['jsx'])(So, { data: V })
+          : Object(xo['jsx'])('div', {
               style: {
                 display: 'flex',
                 alignItems: 'start',
@@ -90831,8 +90875,8 @@
                 height: '100%',
               },
               children: q.map((e, t) =>
-                Object(Oo['jsx'])(
-                  No,
+                Object(xo['jsx'])(
+                  Ho,
                   {
                     style: { flex: t === q.length - 1 ? 'none' : '0 1 auto' },
                     path: F.slice(0, t),
@@ -90846,7 +90890,7 @@
                 ),
               ),
             })),
-        Object(Oo['jsx'])('div', {
+        Object(xo['jsx'])('div', {
           style: {
             display: 'flex',
             flexDirection: 'column',
@@ -90857,36 +90901,36 @@
             bottom: 0,
             paddingTop: 16,
           },
-          children: Object(Oo['jsx'])(kn['a'], {
+          children: Object(xo['jsx'])(kn['a'], {
             backend: hr,
-            children: Object(Oo['jsxs'])(Co.Provider, {
+            children: Object(xo['jsxs'])(No.Provider, {
               value: { editable: b, onEdit: J, onRemove: G, moveRecord: X },
               children: [
-                !So &&
-                  Object(Oo['jsx'])('div', {
+                !Yo &&
+                  Object(xo['jsx'])('div', {
                     style: { marginBottom: 16, height: 32, flex: 'none' },
-                    children: Object(Oo['jsx'])(E['a'], {
+                    children: Object(xo['jsx'])(E['a'], {
                       form: A,
                       component: !1,
                       layout: 'inline',
                       autoComplete: 'off',
-                      children: Object(Oo['jsxs'])(a['b'], {
+                      children: Object(xo['jsxs'])(a['b'], {
                         size: 'large',
                         children: [
                           n
-                            ? Object(Oo['jsx'])(E['a'].Item, {
+                            ? Object(xo['jsx'])(E['a'].Item, {
                                 initialValue: t,
                                 label: '\u6807\u9898',
                                 name: 'title',
                                 style: { margin: 0 },
-                                children: Object(Oo['jsx'])(x['a'], {
+                                children: Object(xo['jsx'])(x['a'], {
                                   autoComplete: 'off',
                                 }),
                               })
                             : t,
                           r && vr()(r).format(h),
                           n &&
-                            Object(Oo['jsx'])(j, {
+                            Object(xo['jsx'])(j, {
                               checkedChildren: '\u53ef\u7f16\u8f91',
                               unCheckedChildren: '\u53ef\u7f16\u8f91',
                               checked: !y,
@@ -90895,7 +90939,7 @@
                               },
                             }),
                           n &&
-                            Object(Oo['jsx'])(o['a'], {
+                            Object(xo['jsx'])(o['a'], {
                               type: 'primary',
                               onClick: () => {
                                 null === s ||
@@ -90912,7 +90956,7 @@
                             }),
                           n &&
                             f &&
-                            Object(Oo['jsx'])(o['a'], {
+                            Object(xo['jsx'])(o['a'], {
                               type: 'primary',
                               danger: !0,
                               style: { position: 'absolute', right: 16 },
@@ -90921,36 +90965,36 @@
                               },
                               children: '\u5220\u9664',
                             }),
-                          d && Object(Oo['jsx'])(I['a'], { spin: !0 }),
+                          d && Object(xo['jsx'])(I['a'], { spin: !0 }),
                         ],
                       }),
                     }),
                   }),
-                Object(Oo['jsx'])('div', {
+                Object(xo['jsx'])('div', {
                   style: { flex: 'auto', minHeight: 0, position: 'relative' },
                   children: $,
                 }),
-                Object(Oo['jsx'])(D['a'], {
+                Object(xo['jsx'])(D['a'], {
                   visible: !!O && !y,
                   onCancel: () => {
                     k(null);
                   },
                   onOk: Q,
-                  children: Object(Oo['jsxs'])(E['a'], {
+                  children: Object(xo['jsxs'])(E['a'], {
                     form: C,
                     layout: 'vertical',
                     autoComplete: 'off',
                     onKeyDown: Z,
                     children: [
-                      Object(Oo['jsx'])(E['a'].Item, {
+                      Object(xo['jsx'])(E['a'].Item, {
                         name: 'title',
                         label: '\u6807\u9898',
-                        children: Object(Oo['jsx'])(x['a'], { ref: M }),
+                        children: Object(xo['jsx'])(x['a'], { ref: M }),
                       }),
-                      Object(Oo['jsx'])(E['a'].Item, {
+                      Object(xo['jsx'])(E['a'].Item, {
                         name: 'description',
                         label: '\u63cf\u8ff0',
-                        children: Object(Oo['jsx'])(x['a'].TextArea, {
+                        children: Object(xo['jsx'])(x['a'].TextArea, {
                           autoSize: { minRows: 6 },
                         }),
                       }),
