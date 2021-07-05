@@ -25,7 +25,7 @@
         :global {
           .strong-mark {
             background: @red-5;
-            color: #FFF;
+            color: #fff;
             // text-shadow: -1px -1px 0 #fff, 1px 1px 0 #fff;
             // position: relative;
 
@@ -74,10 +74,34 @@
       }
     }
 
+    h1,
+    h2,
+    h3,
+    h4,
+    h5 {
+      color: inherit;
+    }
+
+    h3 + .content {
+      position: relative;
+      margin-top: 6px;
+      padding-top: 6px;
+
+      &::after {
+        content: '';
+        left: 0;
+        right: 0;
+        top: 0;
+        border-top: 1px solid currentColor;
+        position: absolute;
+        opacity: 0.3;
+      }
+    }
+
     .content {
       :global {
         .strong-mark {
-          transition: all .3s;
+          transition: all 0.3s;
           padding-left: 4px;
           padding-right: 4px;
           color: @red-5;

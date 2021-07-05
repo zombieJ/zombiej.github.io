@@ -61,7 +61,7 @@ function getConnectedPath(path: number[], virtualRootNote = false) {
 }
 
 export interface Note {
-  id?: string;
+  id: string;
   title?: string;
   description?: string;
   children?: Note[];
@@ -226,13 +226,15 @@ function NoteBlock(props: BasicNoteBlockProps | CreateNoteBlockProps) {
     >
       <div className={styles.holder}>
         {!note.title && !html && '无标题'}
-        <h3>{note.title}</h3>
-        <Typography className={styles.content}>
-          <div
-            className={styles.dangerHolder}
-            dangerouslySetInnerHTML={{ __html: html }}
-          />
-        </Typography>
+        {note.title && <h3>{note.title}</h3>}
+        {(note.description || '').trim() && (
+          <Typography className={styles.content}>
+            <div
+              className={styles.dangerHolder}
+              dangerouslySetInnerHTML={{ __html: html }}
+            />
+          </Typography>
+        )}
       </div>
       {extraRemoveNode}
       {extraChildrenNode}
@@ -274,13 +276,6 @@ function NoteBlockList({
       }}
     >
       {notes.map((note, index) => {
-        if (!note.id) {
-          note.id = `${Date.now()}${Math.random().toFixed(10)}`.replace(
-            '0.',
-            '',
-          );
-        }
-
         return (
           <NoteBlock
             id={note.id}
@@ -300,6 +295,7 @@ function NoteBlockList({
           create
           path={[...path, notes.length]}
           note={{
+            id: 'create',
             description: '\\+ 新建',
           }}
         />
@@ -364,11 +360,30 @@ export default function LinkGraph({
   };
 
   // ============================ Note ============================
-  const [internalNotes, setInternalNotes] = React.useState(notes);
+  const filledNotes: Note[] = React.useMemo(() => {
+    const rootNote = produce({ children: notes } as Note, (draftRootNode) => {
+      function fillId(note: Note) {
+        if (!note.id) {
+          note.id = `${Date.now()}${Math.random().toFixed(10)}`.replace(
+            '0.',
+            '',
+          );
+        }
+
+        note.children?.forEach(fillId);
+      }
+
+      fillId(draftRootNode);
+    });
+
+    return rootNote.children!;
+  }, [notes]);
+
+  const [internalNotes, setInternalNotes] = React.useState(filledNotes);
 
   React.useEffect(() => {
-    setInternalNotes(notes);
-  }, [notes]);
+    setInternalNotes(filledNotes);
+  }, [filledNotes]);
 
   const notesList = React.useMemo(() => {
     let currentList = internalNotes?.length ? internalNotes : [];
@@ -432,7 +447,7 @@ export default function LinkGraph({
   // ============================ Drag ============================
   const moveRecord = React.useCallback(
     (dragPath: number[], hoverPath: number[]) => {
-      const fakeRootNote: Note = { children: internalNotes };
+      const fakeRootNote: Note = { id: 'root', children: internalNotes };
       const rootNote = produce(fakeRootNote, (draftRootNote) => {
         // Drag
         const parentDragPath = getConnectedPath(dragPath.slice(0, -1), true);
@@ -467,7 +482,7 @@ export default function LinkGraph({
       const pathKeys: string[] = [];
       path.forEach((pathIndex) => {
         current = current.children?.[pathIndex]!;
-        pathKeys.push(current.id!);
+        pathKeys.push(current.id);
       });
 
       current = rootNote;
