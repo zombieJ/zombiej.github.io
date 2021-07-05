@@ -25,6 +25,24 @@ interface LayoutProps {
   children: React.ReactNode;
 }
 
+function MenuIcon(props: {
+  icon: React.ReactElement;
+  activeIcon?: React.ReactElement;
+  active?: boolean;
+}) {
+  if (mobile) {
+    return null;
+  }
+
+  const { icon, active, activeIcon } = props;
+
+  if (!activeIcon) {
+    return icon;
+  }
+
+  return active ? activeIcon : icon;
+}
+
 export default ({ children }: LayoutProps) => {
   const { pathname } = useLocation();
 
@@ -76,21 +94,29 @@ export default ({ children }: LayoutProps) => {
 
       <Menu.Item key="/blog" title="博客">
         <Link to="/blog">
-          {pathname === '/blog' ? <FolderOpenOutlined /> : <FolderOutlined />}
+          <MenuIcon
+            active={pathname === '/blog'}
+            activeIcon={<FolderOpenOutlined />}
+            icon={<FolderOutlined />}
+          />
           <span className="nav-text">博客</span>
         </Link>
       </Menu.Item>
 
       <Menu.Item key="/memory" title="回忆">
         <Link to="/memory">
-          {pathname === '/memory' ? <SmileOutlined /> : <MehOutlined />}
+          <MenuIcon
+            active={pathname === '/memory'}
+            activeIcon={<SmileOutlined />}
+            icon={<MehOutlined />}
+          />
           <span className="nav-text">回忆</span>
         </Link>
       </Menu.Item>
 
       <Menu.Item key="/graph" title="笔记">
         <Link to="/graph">
-          <RadarChartOutlined />
+          <MenuIcon icon={<RadarChartOutlined />} />
           <span className="nav-text">笔记</span>
         </Link>
       </Menu.Item>

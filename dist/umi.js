@@ -1444,6 +1444,13 @@
       Ce = ue.Sider,
       Pe = ue.Header,
       Ye = Object(je['a'])();
+    function Ae(e) {
+      if (Ye) return null;
+      var t = e.icon,
+        n = e.active,
+        r = e.activeIcon;
+      return r && n ? r : t;
+    }
     t['default'] = (e) => {
       var t,
         n = e.children,
@@ -1478,9 +1485,11 @@
                 children: Object(Se['jsxs'])(Me['a'], {
                   to: '/blog',
                   children: [
-                    '/blog' === o
-                      ? Object(Se['jsx'])(ce['a'], {})
-                      : Object(Se['jsx'])(le['a'], {}),
+                    Object(Se['jsx'])(Ae, {
+                      active: '/blog' === o,
+                      activeIcon: Object(Se['jsx'])(ce['a'], {}),
+                      icon: Object(Se['jsx'])(le['a'], {}),
+                    }),
                     Object(Se['jsx'])('span', {
                       className: 'nav-text',
                       children: '\u535a\u5ba2',
@@ -1497,9 +1506,11 @@
                 children: Object(Se['jsxs'])(Me['a'], {
                   to: '/memory',
                   children: [
-                    '/memory' === o
-                      ? Object(Se['jsx'])(he, {})
-                      : Object(Se['jsx'])(ge, {}),
+                    Object(Se['jsx'])(Ae, {
+                      active: '/memory' === o,
+                      activeIcon: Object(Se['jsx'])(he, {}),
+                      icon: Object(Se['jsx'])(ge, {}),
+                    }),
                     Object(Se['jsx'])('span', {
                       className: 'nav-text',
                       children: '\u56de\u5fc6',
@@ -1516,7 +1527,7 @@
                 children: Object(Se['jsxs'])(Me['a'], {
                   to: '/graph',
                   children: [
-                    Object(Se['jsx'])(Oe, {}),
+                    Object(Se['jsx'])(Ae, { icon: Object(Se['jsx'])(Oe, {}) }),
                     Object(Se['jsx'])('span', {
                       className: 'nav-text',
                       children: '\u7b14\u8bb0',
