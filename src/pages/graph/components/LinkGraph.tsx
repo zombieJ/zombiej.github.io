@@ -25,6 +25,7 @@ import RootContext from '@/context';
 import { get, set } from 'lodash';
 import styles from './LinkGraph.less';
 import { parseMarkdown } from './util';
+import MobileTreeView from './MobileTreeView';
 
 const NOTE_MIN_WIDTH = 200;
 const NOTE_MAX_WIDTH = 400;
@@ -109,59 +110,63 @@ function NoteBlock(props: BasicNoteBlockProps | CreateNoteBlockProps) {
   const containerRef = React.useRef<HTMLDivElement>(null);
 
   // ===================== Drag & Drop ======================
-  const [{ handlerId }, drop] = useDrop({
-    accept: ItemTypes.CARD,
-    collect(monitor) {
-      return {
-        handlerId: monitor.getHandlerId(),
-      };
-    },
-    drop(item: DragItem, monitor: DropTargetMonitor) {
-      if (!containerRef.current) {
-        return;
-      }
-      const dragPath = item.path;
-      const hoverPath = path;
+  let opacity = 1;
 
-      // Don't replace items with themselves
-      const dragPathStr = [...dragPath, ''].join('_');
-      const hoverPathStr = [...hoverPath, ''].join('_');
-      if (dragPathStr === hoverPathStr) {
-        return;
-      }
+  if (!mobile) {
+    const [{ handlerId }, drop] = useDrop({
+      accept: ItemTypes.CARD,
+      collect(monitor) {
+        return {
+          handlerId: monitor.getHandlerId(),
+        };
+      },
+      drop(item: DragItem, monitor: DropTargetMonitor) {
+        if (!containerRef.current) {
+          return;
+        }
+        const dragPath = item.path;
+        const hoverPath = path;
 
-      // Not allow nest
-      if (hoverPathStr.startsWith(dragPathStr)) {
-        return;
-      }
+        // Don't replace items with themselves
+        const dragPathStr = [...dragPath, ''].join('_');
+        const hoverPathStr = [...hoverPath, ''].join('_');
+        if (dragPathStr === hoverPathStr) {
+          return;
+        }
 
-      // Time to actually perform the action
-      moveRecord(dragPath, hoverPath);
+        // Not allow nest
+        if (hoverPathStr.startsWith(dragPathStr)) {
+          return;
+        }
 
-      // Note: we're mutating the monitor item here!
-      // Generally it's better to avoid mutations,
-      // but it's good here for the sake of performance
-      // to avoid expensive index searches.
-      item.path = hoverPath;
-    },
-  });
+        // Time to actually perform the action
+        moveRecord(dragPath, hoverPath);
 
-  const [{ isDragging }, drag] = useDrag({
-    type: ItemTypes.CARD,
-    item: () => {
-      return { id, index, path };
-    },
-    collect: (monitor: any) => {
-      return {
-        isDragging: monitor.isDragging(),
-      };
-    },
-  });
+        // Note: we're mutating the monitor item here!
+        // Generally it's better to avoid mutations,
+        // but it's good here for the sake of performance
+        // to avoid expensive index searches.
+        item.path = hoverPath;
+      },
+    });
 
-  const opacity = isDragging ? 0.5 : 1;
+    const [{ isDragging }, drag] = useDrag({
+      type: ItemTypes.CARD,
+      item: () => {
+        return { id, index, path };
+      },
+      collect: (monitor: any) => {
+        return {
+          isDragging: monitor.isDragging(),
+        };
+      },
+    });
 
-  if (!create) {
-    drag(drop(containerRef));
+    opacity = isDragging ? 0.5 : 1;
+
+    if (!create) {
+      drag(drop(containerRef));
+    }
   }
 
   // ======================== Handle ========================
@@ -230,7 +235,7 @@ function NoteBlock(props: BasicNoteBlockProps | CreateNoteBlockProps) {
     >
       <div className={styles.holder}>
         {!note.title && !html && '无标题'}
-        {note.title && <h3>{note.title}</h3>}
+        {note.title && <h3 className={styles.title}>{note.title}</h3>}
         {(note.description || '').trim() && (
           <Typography className={styles.content}>
             <div
@@ -349,18 +354,7 @@ export default function LinkGraph({
   const [rootForm] = Form.useForm();
 
   // ============================ Path ============================
-  const [path, setInternalPath] = React.useState<number[]>([]);
-  const [highlightPath, setHightPath] = React.useState(path);
-
-  function setPath(newPath: number[]) {
-    setInternalPath(newPath);
-    setHightPath(newPath);
-  }
-
-  function setBreadcrumbPath(newPath: number[]) {
-    setInternalPath(newPath);
-    setHightPath(path);
-  }
+  const [path, setPath] = React.useState<number[]>([]);
 
   const onUpdatePath = (pathIndex: number, index: number) => {
     const parentPath = path.slice(0, pathIndex);
@@ -539,36 +533,35 @@ export default function LinkGraph({
   // >>>>> 笔记列表
   let notesNode: React.ReactNode;
   if (!mobile) {
-    notesNode = notesList.map((noteList, noteIndex) => (
-      <NoteBlockList
-        style={{
-          flex: noteIndex === notesList.length - 1 ? 'none' : '0 1 auto',
-        }}
-        path={path.slice(0, noteIndex)}
-        key={noteIndex}
-        notes={noteList}
-        activeIndex={path[noteIndex]}
-        onSelect={(index) => {
-          onUpdatePath(noteIndex, index);
-        }}
-      />
-    ));
-  } else {
-    const lastIndex = notesList.length - 1;
     notesNode = (
-      <NoteBlockList
+      <div
         style={{
-          flex: 'auto',
-          marginRight: 16,
+          display: 'flex',
+          alignItems: 'start',
+          columnGap: 8,
+          position: 'relative',
+          height: '100%',
         }}
-        path={path}
-        notes={notesList[lastIndex]}
-        activeIndex={highlightPath[lastIndex]}
-        onSelect={(index) => {
-          onUpdatePath(lastIndex, index);
-        }}
-      />
+      >
+        {/* 笔记列表 */}
+        {notesList.map((noteList, noteIndex) => (
+          <NoteBlockList
+            style={{
+              flex: noteIndex === notesList.length - 1 ? 'none' : '0 1 auto',
+            }}
+            path={path.slice(0, noteIndex)}
+            key={noteIndex}
+            notes={noteList}
+            activeIndex={path[noteIndex]}
+            onSelect={(index) => {
+              onUpdatePath(noteIndex, index);
+            }}
+          />
+        ))}
+      </div>
     );
+  } else {
+    notesNode = <MobileTreeView data={internalNotes} />;
   }
 
   return (
@@ -578,7 +571,7 @@ export default function LinkGraph({
         flexDirection: 'column',
         position: 'absolute',
         left: 16,
-        right: 0,
+        right: 16,
         top: 0,
         bottom: 0,
         paddingTop: 16,
@@ -657,33 +650,6 @@ export default function LinkGraph({
             </div>
           )}
 
-          {/* Mobile 操作栏 */}
-          {mobile && (
-            <div style={{ flex: 'none', marginBottom: 16 }}>
-              <Breadcrumb>
-                <Breadcrumb.Item
-                  onClick={() => {
-                    setBreadcrumbPath([]);
-                  }}
-                >
-                  <HomeOutlined />
-                </Breadcrumb.Item>
-                {path.map((noteIndex, pathIndex) => {
-                  return (
-                    <Breadcrumb.Item
-                      key={pathIndex}
-                      onClick={() => {
-                        setBreadcrumbPath(path.slice(0, pathIndex + 1));
-                      }}
-                    >
-                      {notesList[pathIndex][noteIndex]?.title}
-                    </Breadcrumb.Item>
-                  );
-                })}
-              </Breadcrumb>
-            </div>
-          )}
-
           <div
             style={{
               flex: 'auto',
@@ -691,18 +657,7 @@ export default function LinkGraph({
               position: 'relative',
             }}
           >
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'start',
-                columnGap: 8,
-                position: 'relative',
-                height: '100%',
-              }}
-            >
-              {/* 笔记列表 */}
-              {notesNode}
-            </div>
+            {notesNode}
           </div>
 
           {/* 编辑框 */}
